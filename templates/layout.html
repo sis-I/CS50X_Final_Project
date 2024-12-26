@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <!-- Bootstrap css-->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+        <!-- Bootstrap icons -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+        <!-- Bootstrap Js bundle -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
+
+        <link href="/static/styles.css" rel="stylesheet">
+        <title>Am-En Dictionary {% block title %}{% endblock%}</title>
+    </head>
+
+    <body>
+        <nav class="navbar nav--sticky sticky-top">
+            <div class="container-fluid">
+                <a class="navbar-brand text-light" href="/">Amharic-English Dictionary</a>
+                <div class="d-flex">
+
+                    <div class="db-search">
+                        {% block db_search %} {% endblock %}
+                    </div>
+
+                    <button class="navbar-toggler sandwitch" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" class="bi bi-list f" fill="currentColor" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M2.5 11.5A.5.5 0 0 1 3 11h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4A.5.5 0 0 1 3 7h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4A.5.5 0 0 1 3 3h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5z"></path>
+                        </svg>
+                    </button>
+                </div>
+                <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
+                    <div class="offcanvas-header">
+                        <h5 class="offcanvas-title" id="offcanvasNavbarLabel">Menu</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                    </div>
+                    <div class="offcanvas-body">
+                        <hr>
+                        <ul class="navbar-nav text-start justify-content-end flex-grow-1 pe-3">
+                            <li class="nav-item">
+                                <a class="nav-link active" aria-current="page" href="/">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/bookmark">Bookmark</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/history">History</a>
+                            </li>
+                            <hr>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <span class="theme-icon"><i class="bi"></i></span> Theme
+                                </a>
+                                <ul class="dropdown-menu theme-menu p-2">
+                                    <li><a class="dropdown-item rounded-1" id="light-theme" href="#"><span class="me-2"><i class="bi bi-brightness-high-fill"></i></span>Light</a></li>
+                                    <li><a class="dropdown-item rounded-1" id="dark-theme" href="#"><span class="me-2"><i class="bi bi-moon-stars-fill"></i></span>Dark</a></li>
+                                    <li><a class="dropdown-item rounded-1" id="auto-theme" href="#"><span class="me-2"><i class="bi bi-circle-half"></i></span>Auto</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <main class="container-fluid main-container d-flex align-items-center justify-content-center">
+            {% block main %}
+
+            {% endblock %}
+        </main>
+
+
+        {% block jsscript %}
+
+        {% endblock %}
+
+        <script>
+            const body = document.querySelector("body");
+
+            const nav = document.querySelector('nav');
+            const offcanvas = document.querySelector('.offcanvas');
+            const theme_selectors = document.querySelectorAll(".theme-menu li a"),
+                  theme_icon = document.querySelector('.theme-icon i');
+
+            const dark_theme = document.getElementById('dark-theme'),
+                  light_theme = document.getElementById('light-theme'),
+                  auto_theme = document.getElementById('auto-theme');
+
+            const word_card = document.querySelector('.wordview-card');
+            const modal_content = document.querySelector('.modal-content');
+
+            // Using localStorage to make page theme mode persistent
+            let theme = localStorage.getItem('theme');
+
+            // Theme icon class list
+            const icon_class = theme_icon.classList;
+
+            if (theme) {
+
+                if (theme === 'dark') {
+                    // Dark mode
+                    console.log('dark')
+                    setIcon(dark_theme);
+                    add_darkmode(dark_theme);
+
+                } else if (theme === 'light') {
+                    // Light Mode
+                    console.log('light');
+                    setIcon(light_theme);
+                    remove_darkmode(light_theme);
+
+                } else if (theme === 'auto') {
+                    // Auto
+                    console.log('auto');
+                    setIcon(auto_theme);
+                    auto_mode(auto_theme);
+                }
+
+            } else {
+                theme = 'light';
+                localStorage.setItem('theme', theme);
+                light_theme.classList.add('active');
+                icon_class.add('bi-brightness-high-fill');
+            }
+
+            function add_darkmode(theme_selector) {
+                body.setAttribute('data-theme', 'dark');
+                theme_selector.classList.add('active')
+                nav.classList.add('navbar-dark');
+                offcanvas.setAttribute('data-bs-theme', 'dark');
+
+                if (modal_content) {
+                    modal_content.classList.add('bg-dark', 'bg-gradient');
+                    const form = modal_content.querySelector('form')
+                    form.classList.add('bg-dark');
+                }
+
+                if (word_card) {
+                    const headers_mains = word_card.querySelectorAll(['.amharic-word', '.english-word']);
+                    headers_mains.forEach(hm => {
+                        hm.classList.remove('bg-light');
+                        hm.classList.add('bg-dark');
+                    });
+                }
+            }
+
+            function remove_darkmode(theme_selector) {
+                body.removeAttribute('data-theme');
+                theme_selector.classList.add('active')
+
+                nav.classList.remove('navbar-dark');
+                offcanvas.removeAttribute('data-bs-theme', 'dark');
+
+                if (modal_content) {
+                    modal_content.classList.remove('bg-dark', 'bg-gradient');
+                    const form = modal_content.querySelector('form')
+                    form.classList.remove('bg-dark');
+                }
+
+                if (word_card) {
+                    const headers_mains = word_card.querySelectorAll(['.amharic-word', '.english-word']);
+                    headers_mains.forEach(hm => {
+                        hm.classList.remove('bg-dark');
+                        hm.classList.add('bg-light');
+                    });
+                }
+            }
+
+            function auto_mode(theme_selector) {
+
+                // Get current hours
+                let hours = new Date().getHours();
+
+                // During day time, auto light mode
+                if (hours > 6 && hours <= 18) {
+                    // Light mode
+                    console.log('light mode');
+                    remove_darkmode(theme_selector);
+                }
+                // During night time, auto dark mode
+                else {
+                    // Dark mode
+                    console.log('dark mode');
+                    add_darkmode(theme_selector);
+                }
+            }
+
+            function setIcon(theme_selector) {
+                const className = theme_selector.querySelector('i').classList[1];
+                if (icon_class[1] !== className) {
+                    icon_class.remove(icon_class[1]);
+                }
+                icon_class.add(className);
+            }
+
+            function load_theme() {
+
+                theme_selectors.forEach((theme_selector, index, arr) => {
+                    // Listen to a click event of theme selector
+                    theme_selector.onclick = () => {
+
+                        // Remove active theme
+                        arr.forEach(th => {
+                            if (th.classList.contains('active')) {
+                                th.classList.remove('active');
+                                return;
+                            }
+                        });
+
+                        if (theme_selector.id === 'dark-theme') {
+                            // Enable dark mode when dark theme button selected
+                            setIcon(theme_selector);
+                            add_darkmode(theme_selector);
+                            localStorage.setItem('theme', 'dark');
+
+                        } else if (theme_selector.id === "light-theme") {
+                            // Remove darkmode when light mode selector clicked
+                            setIcon(theme_selector);
+                            remove_darkmode(theme_selector);
+                            localStorage.setItem('theme', 'light');
+
+                        } else {
+                            // Apply auto mode when auto theme selector clicked
+                            setIcon(theme_selector);
+                            auto_mode(theme_selector);
+                            localStorage.setItem('theme', 'auto');
+                        }
+                    }
+                });
+            }
+
+            document.addEventListener("DOMContentLoaded", (event) => {
+                load_theme();
+            });
+        </script>
+    </body>
+
+</html>

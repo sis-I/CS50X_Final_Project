@@ -1,0 +1,81 @@
+{% extends 'layout.html' %}
+
+{% block title %} - {{ dict_word.amharic }}{% endblock %}
+
+{% block main %}
+    <div class="wordview-card rounded w-100 bg-secondary d-flex flex-column" style="max-width: 768px !important;">
+        <div class="px-2">
+            <header class="d-flex w-100 px-2 mt-2">
+                <div class="col-3 text-center p-1 bg-light amharic-word rounded rounded-bottom-0" width="45px">
+                    <span class="h5">{{ dict_word.amharic }}</span>
+                </div>
+                <form class="bookmark-word ms-auto" method="post">
+                    <input type="hidden" value="{{ dict_word.id }}">
+                    <button class="btn btn-secondary word-bookmark-hit-action"  title="Bookmark or Un-bookmark" type="submit">
+                        {% if dict_word.id in bookmark_rows %}
+                            <i class="bi bi-bookmark-fill"></i>
+                        {% else %}
+                            <i class="bi bi-bookmark"></i>
+                        {% endif %}
+                    </button>
+                </form>
+            </header>
+            <main class="rounded">
+                <div class="col-12 english-word p-3 bg-light" height="300px">
+                    <p class="mb-0">{{ dict_word.wordtype }}</p>
+                    <hr class="mt-0">
+                    {% for english in dict_word.english.split(';') %}
+                        <p><em>{{loop.index }}.</em> {{ english.strip() }}</p>
+                    {% endfor %}
+                </div>
+            </main>
+        </div>
+        <footer class="col-12 p-2 text-white text-opacity-75">
+            <small>© <i>This dictionary is copy righted</i></small>
+        </footer>
+    </div>
+{% endblock %}
+
+{% block jsscript %}
+    <script>
+
+        // Toggle bookmark
+        function toggleBookmark() {
+            const form = document.querySelector('.bookmark-word');
+            const input = form.querySelector('input');
+            const btn = form.querySelector("i");
+
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+
+                const formData = { 'id': input.value };
+
+                fetch(`/add-or-delete-bookmark`, {
+                    method: 'POST',
+                    headers: new Headers({
+                        'content-type': 'application/json',
+                    }),
+                    body: JSON.stringify(formData)
+                }).then(res => {
+                    if (res.status !== 200) {
+                        console.log(res.status)
+                        return;
+                    }
+                    res.json().then(data => console.log(data))
+                }).catch(error => console.log(error))
+            });
+
+            btn.onclick = () => {
+                const b_icon = 'bi-bookmark'
+                if (btn.classList.contains(b_icon)) {
+                    btn.classList.replace(b_icon, `${b_icon}-fill`)
+                } else {
+                    btn.classList.replace(`${b_icon}-fill`, b_icon)
+                }
+            }
+        }
+
+        // run the toggle function
+        toggleBookmark();
+    </script>
+{% endblock %}

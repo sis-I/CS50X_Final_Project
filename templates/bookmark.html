@@ -1,0 +1,40 @@
+{% extends "layout.html" %}
+
+{% block title %}Bookmark{% endblock %}
+
+{% block main %}
+    {% if bookmark %}
+        <section class="bookmark--section my-3 align-self-start w-100" style="max-width: 600px;">
+            <h3>Bookmarked Words: </h3>
+            <form class="d-flex justify-content-end" action="/bookmark/clear">
+                <input class="btn btn-secondary-outline h6 clear--form" type="submit" value="Clear">
+            </form>
+            <ul class="listbox">
+                {% for row in bookmark %}
+                    <li class="search-hit mb-1">
+                        <a href="/dictionary/{{ row.amharic }}">
+                            <div class="search-hit-container rounded">
+                                <div class="h5 w-100">{{ row.amharic }}</div>
+                                <form action="{{ url_for('delete_bookmark', id=row.id) }}" class="search-hit-action" method="post">
+                                    <button class="btn search-hit-action-button" title="Remove this search from history" type="submit">
+                                        <svg width="20" height="20" viewBox="0 0 20 20">
+                                            <path d="M10 10l5.09-5.09L10 10l5.09 5.09L10 10zm0 0L4.91 4.91 10 10l-5.09 5.09L10 10z" stroke="currentColor" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round"></path>
+                                        </svg>
+                                    </button>
+                                </form>
+                            </div>
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </section>
+    {% else %}
+        <span class="h4">No bookmark to show!!</span>
+
+    {% endif %}
+
+{% endblock %}
+{% block jsscipt %}
+    <script>
+    </script>
+{% endblock %}
