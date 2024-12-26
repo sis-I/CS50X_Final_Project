@@ -1,3 +1,16 @@
+# Flask Session
 **/flask_session/
 
+# Python cache
 **/__pycache__/
+
+
+# Python environment
+**/venv/
+**/.venv/
+
+# Dot env
+**/.env
+
+# Database
+dictionary.db
