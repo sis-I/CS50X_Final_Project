@@ -1,6 +1,4 @@
-import os
-# from cs50 import SQL
-from flask_sqlalchemy import SQLAlchemy as SQL
+from cs50 import SQL
 
 from flask import (
     Flask,
@@ -12,29 +10,20 @@ from flask import (
     url_for,
     make_response,
 )
-
 from flask_session import Session
-from dotenv import load_dotenv
-
-load_dotenv()
 
 # Configure application
 app = Flask(__name__)
 
-# # Configure session to use filesystem (instead of signed cookies)
+# Configure session to use filesystem (instead of signed cookies)
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 
 Session(app)
 
-# SQLAlchemy database
-# db = SQL()
+# Configure CS50 Library to use sqlite database
+db = SQL("sqlite:///dictionary.db")
 
-app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL") 
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-
-db = SQL(app)
-# db.init_app(app)
 
 @app.route("/")
 def index():
@@ -73,16 +62,11 @@ def search():
     word = request.args.get("q")
 
     if word:
-        rows = db.engine.execute(
-            "SELECT * FROM dictionary WHERE amharic= :word;",  {'word' : word}
+        rows = db.execute(
+            "SELECT * FROM dictionary WHERE amharic LIKE ?;", "%" + word + "%"
         )
-        print(rows)
-
-        # rows = db.execute(
-        #     "SELECT * FROM dictionary WHERE amharic LIKE ?;", "%" + word + "%"
-        # )
         # If result found
-        if rows is not None:
+        if len(rows) > 0:
             # View search results
             return render_template("search.html", rows=rows)
 
@@ -245,7 +229,12 @@ def clear_all_histroy():
     session.get("history").clear()
     return redirect("/")
 
+import os
+from dotenv import load_dotenv
 
-# if __name__ == "__main__":
-#     # psycopg2.connect(os.environ.get("DATABASE_URL"))
-#     # app.run(debug=True)
+load_dotenv()
+print("hello")
+print(os.environ.get("DATABASE_URL"))
+if __name__ == "__main__":
+    psycopg2.connect(os.environ.get("DATABASE_URL"))
+    # app.run(debug=True)

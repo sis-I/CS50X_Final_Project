@@ -51,7 +51,44 @@ It contains the following view functions:
     - __*remove_history*__ function - removes a single history in a session (in history page)
     - __*clear_all_history*__ function - clears all the history in session (in history page)
 
-> **`dictionary.db`** - SQLite database, with dictionary table where all data stored.
+### Database
+> Previously: **`dictionary.db`** - SQLite database was used, with dictionary table where all data stored.
+
+> Now: **PostgreSQL** database is used to handle all database management. To accomplish this we need to convert SQLite database to PostgreSQL.
+
+Run this from root directory, to dump all dictionary schema and entry to sql file. 
+
+cmd
+>`> sqlite3 dictionary.db .dump > psql_dictionary.sql`
+
+or Convert sqlite3 syntax to PostgreSQL compatible syntax
+> `sqlite3 dictionary.db .dump | sed -e 's/INTEGER PRIMARY KEY AUTOINCREMENT/SERIAL PRIMARY KEY/g;s/PRAGMA foreign_keys=OFF;//;s/unsigned big int/BIGINT/g;s/UNSIGNED BIG INT/BIGINT/g;s/BIG INT/BIGINT/g;s/UNSIGNED INT(10)/BIGINT/g;s/BOOLEAN/SMALLINT/g;s/boolean/SMALLINT/g;s/UNSIGNED BIG INT/INTEGER/g;s/INT(3)/INT2/g;s/DATETIME/TIMESTAMP/g' > psql_dictionary.sql`
+
+Navigate to the existing `psql_dictionary.sql` file and change the **amharic** column data type of the *dictionary* table to **TEXT**. This will prevent future data migration errors caused by inserting characters longer than **VARCHAR(25)**.
+
+OR
+
+Insert these lines in the file
+> `ALTER TABLE dictionary`\
+`ALTER COLUMN amharic TYPE TEXT;`
+
+Delete these lines:
+
+> `DELETE FROM sqlite_sequence;`\
+`INSERT INTO sqlite_sequence VALUES('dictionary',1100);`
+
+Create and add all entry into `psql`.
+
+Navigate to root directory to find already dumped psql_dictionary.sql file and run the below to migrate data from the file .
+> `> psql -d <database> -U <username> -W < psql_dictionary.sql`
+
+[ *Put your own database name to  `<database>` and your username to `<username>` placehoders.* ]
+
+If you encounter an 'encoding error', navigate to the root directory using **cmd** and run the following command:
+> `psql -d <database> -U <username>`\
+`<database># SET CLIENT_ENCODING TO 'utf8';`
+
+Then, run the data migration again.
 
 ### User Interface
 The user interface of the application is designed to be user-friendly and easy to navigate. The main features of the user interface are:
