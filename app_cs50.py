@@ -230,11 +230,11 @@ def clear_all_histroy():
     return redirect("/")
 
 import os
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 
-load_dotenv()
+# load_dotenv()
 print("hello")
-print(os.environ.get("DATABASE_URL"))
+# print(os.environ.get("DATABASE_URL"))
 if __name__ == "__main__":
-    psycopg2.connect(os.environ.get("DATABASE_URL"))
-    # app.run(debug=True)
+    app.run(debug=True)
+    pass
