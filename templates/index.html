@@ -28,7 +28,7 @@
                 </div>
                 <div class="modal-body">
                 <!-- If Recent search has found before any keyup -->
-                    {% if history_rows %}
+                    <!--{% if history_rows %}
                         <section class="search-hits" id="recent-searches">
                             <div class="search-hit-source">Recent</div>
                             <ul role="listbox" aria-labelledby="search-label" id="search-list">
@@ -63,11 +63,11 @@
                             </ul>
                         </section>
                     {% else %}
-                <!-- If no Recent Search found -->
+                <! If no Recent Search found ->
                         <div class="search-start-screen" id="no-recent-searches">
                             <p class="search-help">No recent searches</p>
                         </div>
-                    {% endif %}
+                    {% endif %}-->
                 <!-- If list of search results found on keyup or input pasted -->
                     <section class="search-result--section" id="search-result-section">
                         <!-- Search results will display here OR If No Search Result -->
@@ -76,7 +76,7 @@
             </div>
         </div>
     </div>
-    {% if history_rows %}
+    <!--{% if history_rows %}
         <div class="wordview-card rounded w-100 bg-secondary d-flex flex-column" style="max-width: 768px !important;">
             <ul>
                 {% for row in history_rows %}
@@ -85,7 +85,7 @@
                             <a href="/dictionary/{{row.amharic}}" class="col-3 text-center p-1 amharic-word bg-light rounded rounded-bottom-0" width="45px">
                                 <span class="h5">{{row.amharic}}</span>
                             </a>
-                            <!--  Bookmark or un-bookmark word -->
+                            <!-Bookmark or un-bookmark word->
                             <form action="/add-or-delete-bookmark/" class="ms-auto bookmark-word" method="post">
                                 <input type="hidden" value={{row.id}}>
                                 <button class="btn btn-secondary word-bookmark-hit-action"  title="Bookmark or Un-bookmark" type="submit">
@@ -115,12 +115,13 @@
         </div>
     {% else %}
         <span class="h4">Search for a word</span>
-    {% endif %}
+    {% endif %}-->
 
 {% endblock %}
 
 {% block jsscript %}
     <script>
+        /*
         // Get History session if exist
         const history = {{ session.get('history')|tojson }};
 
@@ -382,6 +383,6 @@
                 });
             });
         }
-
+        */
     </script>
 {% endblock %}

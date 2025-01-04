@@ -235,6 +235,6 @@ import os
 # load_dotenv()
 print("hello")
 # print(os.environ.get("DATABASE_URL"))
-if __name__ == "__main__":
-    app.run(debug=True)
-    pass
+# if __name__ == "__main__":
+#     app.run(debug=True)
+#     pass

@@ -1,5 +1,7 @@
 import os
 # from cs50 import SQL
+from datetime import datetime
+
 from flask_sqlalchemy import SQLAlchemy
 
 from flask import (
@@ -16,82 +18,158 @@ from flask import (
 from flask_session import Session
 from dotenv import load_dotenv
 
+from models import Dictionary, Bookmark, History
+
 load_dotenv()
 
 # Configure application
 app = Flask(__name__)
 
-# # Configure session to use filesystem (instead of signed cookies)
-# app.config["SESSION_PERMANENT"] = False
-# app.config["SESSION_TYPE"] = "filesystem"
+# Configure session to use filesystem (instead of signed cookies)
+app.config["SESSION_PERMANENT"] = False
+app.config["SESSION_TYPE"] = "filesystem"
 
-# Session(app)
+Session(app)
 
-# SQLAlchemy database
-db = SQLAlchemy()
 
 app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL") 
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
+# SQLAlchemy database
+db = SQLAlchemy()
+
+class Dictionary(db.Model):
+  __tablename__ = 'dictionary1'
+
+  id = db.Column(db.Integer, primary_key=True)
+  amharic = db.Column(db.String(200))
+  english = db.Column(db.TEXT)
+  wordtype = db.Column(db.String(10))
+  reference = db.Column(db.String(20))
+
+  def __init__(sele, amharic, english, wordtype=None, reference=None):
+    self.amharic = amharic
+    self.english = english
+    self.wordtype = wordtype
+    self.reference = reference
+
+  def serialize(self):
+    return {
+      'id': self.id,
+      'amharic': self.amharic,
+      'english': self.english,
+      'wordtype': self.wordtype,
+      'reference': self.reference
+    }
+
+
+  def __repr__(self):
+    return f"<Dictionary {self.amharic}>"
+
+
+class Bookmark(db.Model):
+  __tablename__ = 'bookmark1'
+
+  id = db.Column(db.Integer, primary_key=True)
+  # dictionary = db.relationship('Dictionary', backref='bookmark', lazy=True)
+  dict_id = db.Column(db.Integer, db.ForeignKey('dictionary1.id'))
+  date = db.Column(db.DateTime, default=datetime.utcnow)
+
+  def __init__(self, dict_id):
+    self.dict_id = dict_id
+
+  def serialize(self):
+    return {
+      'id': self.id,
+      'dict_id': self.dict_id,
+      'date': self.date
+    }
+
+  def __repr__(self):
+    return f"<Bookmark {self.dict_id}>"
+
+
+class History(db.Model):
+  __tablename__ = 'history1'
+
+  id = db.Column(db.Integer, primary_key=True)
+  # dictionary = db.relationship('Dictionary', backref='history', lazy=True)
+  dict_id = db.Column(db.Integer, db.ForeignKey('dictionary1.id'))
+  date = db.Column(db.DateTime, default=datetime.utcnow)
+
+  def __init__(self, dict_id):
+    self.dict_id = dict_id
+
+  def serialize(self):
+    return {
+      'id': self.id,
+      'dict_id': self.dict_id,
+      'date': self.date
+    }
+
+  def __repr__(self):
+    return f"<History {self.dict_id}>"
+
+
+# Initialize the database
 db.init_app(app)
 
+@app.route("/")
+def index():
+    """Home page"""
+
+    # Check if history session exists
+    if not session.get("history"):
+        h_rows = session["history"] = []
+
+    else:
+        history_rows = session.get("history")
+        h_rows = []
+        for hr in history_rows:
+            row = Dictionary.query.filter_by(id=hr['dict_id'])    #db.engine.execute("SELECT * FROM dictionary1 WHERE id = ?;", hr["dict_id"])
+            h_rows.append(row[0])
+
+    # Bookmark into the session
+    if not session.get("bookmark"):
+        bk_rows = session["bookmark"] = []
+    else:
+        bk_rows = []
+        bookmark_rows = session.get("bookmark")
+        for bm in bookmark_rows:
+            bk_rows.append(int(bm["dict_id"]))
+
+    return render_template(
+        "index1.html",
+        history_rows=h_rows,
+        bookmark_rows=bk_rows,
+    )
 
 
+@app.route("/search")
+def search():
+    """View search results"""
+    word = request.args.get("q")
 
-# @app.route("/")
-# def index():
-#     """Home page"""
+    if word:
+        # Search for the word in the database
+        rows = Dictionary.query.filter(Dictionary.amharic.like(f"%{word}%")).all()
+        # rows = db.engine.execute(
+        #     "SELECT * FROM dictionary1 WHERE amharic= :word;",  {'word' : word}
+        # )
+        print(rows)
 
-#     # Check if history session exists
-#     if not session.get("history"):
-#         h_rows = session["history"] = []
+        # rows = db.execute(
+        #     "SELECT * FROM dictionary WHERE amharic LIKE ?;", "%" + word + "%"
+        # )
+        # If result found
+        if rows is not None:
+            # View search results
+            return render_template("search.html", rows=rows)
 
-#     else:
-#         history_rows = session.get("history")
-#         h_rows = []
-#         for hr in history_rows:
-#             row = db.execute("SELECT * FROM dictionary WHERE id = ?;", hr["dict_id"])
-#             h_rows.append(row[0])
+    # For simplicity, just get 3 random words
+    rows = db.engine.execute("SELECT * FROM dictionary1 ORDER BY RANDOM() LIMIT 3;")
 
-#     # Bookmark into the session
-#     if not session.get("bookmark"):
-#         bk_rows = session["bookmark"] = []
-#     else:
-#         bk_rows = []
-#         bookmark_rows = session.get("bookmark")
-#         for bm in bookmark_rows:
-#             bk_rows.append(int(bm["dict_id"]))
-
-#     return render_template(
-#         "index.html",
-#         history_rows=h_rows,
-#         bookmark_rows=bk_rows,
-#     )
-
-
-# @app.route("/search")
-# def search():
-#     """View search results"""
-#     word = request.args.get("q")
-
-#     if word:
-#         rows = db.engine.execute(
-#             "SELECT * FROM dictionary WHERE amharic= :word;",  {'word' : word}
-#         )
-#         print(rows)
-
-#         # rows = db.execute(
-#         #     "SELECT * FROM dictionary WHERE amharic LIKE ?;", "%" + word + "%"
-#         # )
-#         # If result found
-#         if rows is not None:
-#             # View search results
-#             return render_template("search.html", rows=rows)
-
-#     # For simplicity, just get 3 random words
-#     rows = db.execute("SELECT * FROM dictionary ORDER BY RANDOM() LIMIT 3;")
-
-#     return render_template("no-result.html", rows=rows)
+    return render_template("no-result.html", rows=rows)
 
 
 # @app.route("/dictionary/<word>")
@@ -250,4 +328,5 @@ db.init_app(app)
 
 if __name__ == "__main__":
     # psycopg2.connect(os.environ.get("DATABASE_URL"))
+    print(os.environ.get("DATABASE_URL"))
     app.run(debug=True)
