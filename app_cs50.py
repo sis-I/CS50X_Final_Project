@@ -10,6 +10,7 @@ from flask import (
     url_for,
     make_response,
 )
+
 from flask_session import Session
 
 # Configure application
@@ -229,12 +230,3 @@ def clear_all_histroy():
     session.get("history").clear()
     return redirect("/")
 
-import os
-# from dotenv import load_dotenv
-
-# load_dotenv()
-print("hello")
-# print(os.environ.get("DATABASE_URL"))
-# if __name__ == "__main__":
-#     app.run(debug=True)
-#     pass

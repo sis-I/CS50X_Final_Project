@@ -47,7 +47,7 @@ class Dictionary(db.Model):
     wordtype = db.Column(db.String(10))
     reference = db.Column(db.String(20))
 
-    def __init__(sele, amharic, english, wordtype=None, reference=None):
+    def __init__(self, amharic, english, wordtype=None, reference=None):
         self.amharic = amharic
         self.english = english
         self.wordtype = wordtype
@@ -193,6 +193,7 @@ def recent_search():
 
     history_rows = session.get("history")
     if not history_rows:
+        print('not history')
         session.get("history").insert(0, {"dict_id": dict_id})
 
     # Check if current word id found in history
@@ -323,5 +324,4 @@ def clear_all_histroy():
 
 
 if __name__ == "__main__":
-    print(os.environ.get("DATABASE_URL"))
     app.run(debug=True)
