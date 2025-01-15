@@ -84,12 +84,21 @@ def single_word(word):
     word_rows = db.execute("SELECT * FROM dictionary WHERE amharic = ?;", word)
 
     if word_rows:
-        bookmark_rows = []
-        if session.get("bookmark"):
-            for bk in session["bookmark"]:
-                bookmark_rows.append(int(bk["dict_id"]))
+        dict_id = word_rows[0].get('id')
+
+        # Check the word is in bookmark
+        was_bookmarked = False
+
+        bookmarks = session.get('bookmark')
+        for bmk in bookmarks:
+            if int(bmk['dict_id']) == dict_id:
+                was_bookmarked = True
+                break
+
         return render_template(
-            "single-word.html", dict_word=word_rows[0], bookmark_rows=bookmark_rows
+            "single-word.html", 
+            dict_word=word_rows[0],
+            bookmarked=was_bookmarked
         )
     else:
         return "Word not Found!!"
@@ -197,7 +206,6 @@ def remove_history():
     if request.method == "POST":
         req = request.get_json()
 
-        print(req)
         histories = session.get("history")
         if histories:
             for h in histories:

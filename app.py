@@ -1,6 +1,4 @@
 import os
-# from cs50 import SQL
-from datetime import datetime
 
 from flask_sqlalchemy import SQLAlchemy
 
@@ -18,8 +16,6 @@ from flask import (
 from flask_session import Session
 from dotenv import load_dotenv
 
-from models import Dictionary, Bookmark, History
-
 load_dotenv()
 
 # Configure application
@@ -30,7 +26,6 @@ app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 
 Session(app)
-
 
 app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL") 
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
@@ -55,61 +50,16 @@ class Dictionary(db.Model):
 
     def serialize(self):
         return {
-        'id': self.id,
-        'amharic': self.amharic,
-        'english': self.english,
-        'wordtype': self.wordtype,
-        'reference': self.reference
+            'id': self.id,
+            'amharic': self.amharic,
+            'english': self.english,
+            'wordtype': self.wordtype,
+            'reference': self.reference
         }
 
 
     def __repr__(self):
         return f"<Dictionary {self.amharic}>"
-
-
-class Bookmark(db.Model):
-    __tablename__ = 'bookmark1'
-
-    id = db.Column(db.Integer, primary_key=True)
-    # dictionary = db.relationship('Dictionary', backref='bookmark', lazy=True)
-    dict_id = db.Column(db.Integer, db.ForeignKey('dictionary1.id'))
-    date = db.Column(db.DateTime, default=datetime.utcnow)
-
-    def __init__(self, dict_id):
-        self.dict_id = dict_id
-
-    def serialize(self):
-        return {
-            'id': self.id,
-            'dict_id': self.dict_id,
-            'date': self.date
-        }
-
-    def __repr__(self):
-        return f"<Bookmark {self.dict_id}>"
-
-
-class History(db.Model):
-    __tablename__ = 'history1'
-
-    id = db.Column(db.Integer, primary_key=True)
-    # dictionary = db.relationship('Dictionary', backref='history', lazy=True)
-    dict_id = db.Column(db.Integer, db.ForeignKey('dictionary1.id'))
-    date = db.Column(db.DateTime, default=datetime.utcnow)
-
-    def __init__(self, dict_id):
-        self.dict_id = dict_id
-
-
-    def serialize(self):
-        return {
-            'id': self.id,
-            'dict_id': self.dict_id,
-            'date': self.date
-        }
-
-    def __repr__(self):
-        return f"<History {self.dict_id}>"
 
 
 # Initialize the database
@@ -127,8 +77,9 @@ def index():
         history_rows = session.get("history")
         h_rows = []
         for hr in history_rows:
-            row = Dictionary.query.filter_by(id=hr['dict_id'])    #db.engine.execute("SELECT * FROM dictionary1 WHERE id = ?;", hr["dict_id"])
-            h_rows.append(row[0])
+            row = Dictionary.query.get(hr['dict_id'])    #db.engine.execute("SELECT * FROM dictionary1 WHERE id = ?;", hr["dict_id"])
+            # Append serialized data into 'history' session 
+            h_rows.append(row.serialize()) 
 
     # Bookmark into the session
     if not session.get("bookmark"):
@@ -153,18 +104,16 @@ def search():
 
     if word:
         # Search for the word in the database
-        rows = db.session.execute(
-            db.select(Dictionary).where(Dictionary.amharic.like(f"%{word}%"))
-        ).scalars() #db.engine.execute("SELECT * FROM dictionary1 WHERE amharic LIKE ?;", f"%{word}%")
-
+        rows = Dictionary.query.where(Dictionary.amharic.like("%" + word + "%")).all()
+       
         # If result found
-        if rows is not None:
+        if rows:
             # View search results
             return render_template("search.html", rows=rows)
 
     # For simplicity, just get 3 random words
-    rows = db.session.execute(db.select(Dictionary).order_by(db.func.random()).limit(3)).scalars() #
-    # db.engine.execute("SELECT * FROM dictionary1 ORDER BY RANDOM() LIMIT 3;")
+    rows = Dictionary.query.order_by(db.func.random()).limit(3)
+
     return render_template("no-result.html", rows=rows)
 
 
@@ -172,15 +121,22 @@ def search():
 def single_word(word):
     """View single word with its defination"""
 
-    word_rows = db.execute("SELECT * FROM dictionary WHERE amharic = ?;", word)
+    row = Dictionary.query.filter_by(amharic=word).first() #db.execute("SELECT * FROM dictionary WHERE amharic = ?;", word)
 
-    if word_rows:
-        bookmark_rows = []
-        if session.get("bookmark"):
-            for bk in session["bookmark"]:
-                bookmark_rows.append(int(bk["dict_id"]))
+    if row:
+        dict_id = row.id 
+
+        # Check if word bookmarked
+        was_bookmarked = False
+        bookmarks = session.get('bookmark')
+
+        for bookmark in bookmarks:
+            if int(bookmark.get('dict_id')) == dict_id:
+                was_bookmarked = True
+                break
+        
         return render_template(
-            "single-word.html", dict_word=word_rows[0], bookmark_rows=bookmark_rows
+            "single-word.html", dict_word=row, bookmarked=was_bookmarked
         )
     else:
         return "Word not Found!!"
@@ -213,12 +169,12 @@ def recent_search():
 @app.route("/bookmark")
 def bookmark():
     """Bookmark page: List of words in history"""
-    bookmark_rows = session["bookmark"]
+    bookmarks = session["bookmark"]
     rows = []
-    if bookmark_rows:
-        for br in bookmark_rows:
-            row = db.execute("SELECT * FROM dictionary WHERE id = ?;", br["dict_id"])
-            rows.append(row[0])
+    if bookmarks:
+        for bmk in bookmarks:
+            row = Dictionary.query.get(bmk['dict_id']) # row = db.execute("SELECT * FROM dictionary WHERE id = ?;", br["dict_id"])
+            rows.append(row)
     return render_template("bookmark.html", bookmark=rows)
 
 
@@ -229,8 +185,8 @@ def history():
     rows = []
     if history_rows:
         for hr in history_rows:
-            row = db.execute("SELECT * FROM dictionary WHERE id = ?;", hr["dict_id"])
-            rows.append(row[0])
+            row = Dictionary.query.get(hr['dict_id']) #db.execute("SELECT * FROM dictionary WHERE id = ?;", hr["dict_id"])
+            rows.append(row)
 
     return render_template("history.html", history=rows)
 

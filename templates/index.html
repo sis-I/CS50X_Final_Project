@@ -196,7 +196,7 @@
       search_result_section.style.display = 'block';
 
       const no_result = document.getElementById("no-result");
-      if (no_result)  {
+      if (no_result !== null)  {
         no_result.querySelector('strong').textContent = input;
 
       } else{

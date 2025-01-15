@@ -12,7 +12,7 @@
                 <form class="bookmark-word ms-auto" method="post">
                     <input type="hidden" value="{{ dict_word.id }}">
                     <button class="btn btn-secondary word-bookmark-hit-action"  title="Bookmark or Un-bookmark" type="submit">
-                        {% if dict_word.id in bookmark_rows %}
+                        {% if bookmarked %}
                             <i class="bi bi-bookmark-fill"></i>
                         {% else %}
                             <i class="bi bi-bookmark"></i>
@@ -43,7 +43,7 @@
         function toggleBookmark() {
             const form = document.querySelector('.bookmark-word');
             const input = form.querySelector('input');
-            const btn = form.querySelector("i");
+            const btn = form.querySelector('button');
 
             form.addEventListener('submit', (e) => {
                 e.preventDefault();
@@ -67,10 +67,11 @@
 
             btn.onclick = () => {
                 const b_icon = 'bi-bookmark'
-                if (btn.classList.contains(b_icon)) {
-                    btn.classList.replace(b_icon, `${b_icon}-fill`)
+                const icon = btn.querySelector('i')
+                if (icon.classList.contains(b_icon)) {
+                    icon.classList.replace(b_icon, `${b_icon}-fill`)
                 } else {
-                    btn.classList.replace(`${b_icon}-fill`, b_icon)
+                    icon.classList.replace(`${b_icon}-fill`, b_icon)
                 }
             }
         }

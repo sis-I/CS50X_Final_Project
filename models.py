@@ -13,7 +13,7 @@ class Dictionary(db.Model):
     wordtype = db.Column(db.String(10))
     reference = db.Column(db.String(20))
 
-    def __init__(sele, amharic, english, wordtype=None, reference=None):
+    def __init__(self, amharic, english, wordtype=None, reference=None):
         self.amharic = amharic
         self.english = english
         self.wordtype = wordtype
@@ -32,7 +32,7 @@ class Dictionary(db.Model):
     def __repr__(self):
         return f"<Dictionary {self.amharic}>"
 
-
+'''
 class Bookmark(db.Model):
     __tablename__ = 'bookmark1'
 
@@ -53,7 +53,6 @@ class Bookmark(db.Model):
 
     def __repr__(self):
         return f"<Bookmark {self.dict_id}>"
-
 
 class History(db.Model):
     __tablename__ = 'history1'
@@ -79,3 +78,4 @@ class History(db.Model):
     def __repr__(self):
         return f"<History {self.dict_id}>"
 
+'''
