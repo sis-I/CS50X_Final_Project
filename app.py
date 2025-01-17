@@ -1,6 +1,7 @@
 import os
 
 from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
 
 from flask import (
     Flask,
@@ -32,6 +33,9 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 # SQLAlchemy database
 db = SQLAlchemy()
+
+# Migrate
+migrate = Migrate(app, db)
 
 class Dictionary(db.Model):
     __tablename__ = 'dictionary'

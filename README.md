@@ -88,7 +88,31 @@ If you encounter an 'encoding error', navigate to the root directory using **cmd
 > `psql -d <database> -U <username>`\
 `<database># SET CLIENT_ENCODING TO 'utf8';`
 
+
 Then, run the data migration again.
+
+#### `Or on Neon Serverless Postgres`
+To copy dictionary data to csv file, go to terminal and run
+  
+    > sqlite3 dictionary.db
+    sqlite>.mode csv
+    sqlite>.header on
+    sqlite>.output dict.csv
+    sqlite> SELECT * FROM dictionary;
+
+Then exit from sqlite shell and run this 
+
+    > psql 'postgresql://[user]:endpoint=<endpoint>[password]@[neon_hostname]/[dbname]?sslmode=require'
+
+Example 
+
+    > psql 'postgresql://alex:endpoint=ep-cool-darkness-123456;AbC123dEf@ep-cool-darkness-123456.us-east-2.aws.neon.tech/dbname?sslmode=require'
+
+Then,
+
+    neondb> \copy dictionary(id, amharic, english, wordtype, reference) FROM '<path/to>/dict.csv' HEADER CSV DELIMITER ',';
+
+Now, data copied to neon_databse
 
 ### User Interface
 The user interface of the application is designed to be user-friendly and easy to navigate. The main features of the user interface are:
