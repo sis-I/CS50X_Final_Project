@@ -5,7 +5,7 @@ from datetime import datetime
 db = SQLAlchemy()
 
 class Dictionary(db.Model):
-    __tablename__ = 'dictionary1'
+    __tablename__ = 'dictionary'
 
     id = db.Column(db.Integer, primary_key=True)
     amharic = db.Column(db.String(200))

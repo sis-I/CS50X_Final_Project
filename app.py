@@ -34,7 +34,7 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy()
 
 class Dictionary(db.Model):
-    __tablename__ = 'dictionary1'
+    __tablename__ = 'dictionary'
 
     id = db.Column(db.Integer, primary_key=True)
     amharic = db.Column(db.String(200))
@@ -117,7 +117,7 @@ def search():
     return render_template("no-result.html", rows=rows)
 
 
-@app.route("/dictionary/<word>")
+@app.route("/dictionary/<path:word>")
 def single_word(word):
     """View single word with its defination"""
 
