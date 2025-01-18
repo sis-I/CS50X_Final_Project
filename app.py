@@ -28,7 +28,7 @@ app = Flask(__name__)
 
 # Session(app)
 
-app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://neondb_owner:joaK7L8ybSNE@ep-curly-sky-a26pjcpp.eu-central-1.aws.neon.tech/neondb?sslmode=require" #os.getenv("DATABASE_URL") 
+app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL") 
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 # SQLAlchemy database
@@ -96,7 +96,7 @@ def index():
 
     return render_template(
         "index1.html",
-        history_rows=[r.serialize() for r in Dictionary.query.limit(4)],# hr_rows,
+        history_rows=[r.serialize() for r in Dictionary.query.limit(4)], # hr_rows,
         # bookmark_rows=bk_rows,
     )
 
