@@ -8,6 +8,7 @@
 # Python environment
 **/venv/
 **/.venv/
+**/testenv/
 
 # Dot env
 **/.env
@@ -19,3 +20,7 @@ dict.csv
 
 # Flask instance
 instance/
+
+# Test requirements
+requirements1.txt
+.vercel
