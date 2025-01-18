@@ -32,7 +32,7 @@ app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://neondb_owner:joaK7L8ybSNE@
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 # SQLAlchemy database
-db = SQLAlchemy()
+db = SQLAlchemy(app)
 
 # Migrate
 migrate = Migrate(app, db)
@@ -67,7 +67,7 @@ class Dictionary(db.Model):
 
 
 # Initialize the database
-db.init_app(app)
+# db.init_app(app)
 
 @app.route("/")
 def index():
