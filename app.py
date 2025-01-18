@@ -151,21 +151,21 @@ def recent_search():
     """Recent word searched will be registered in history session"""
     dict_id = request.args.get("id")
 
-    history_rows = session.get("history")
-    if not history_rows:
-        print('not history')
-        session.get("history").insert(0, {"dict_id": dict_id})
+    # history_rows = session.get("history")
+    # if not history_rows:
+    #     print('not history')
+    #     session.get("history").insert(0, {"dict_id": dict_id})
 
-    # Check if current word id found in history
-    else:
-        found_in_history = False
-        for hr in history_rows:
-            if hr["dict_id"] == dict_id:
-                found_in_history = True
-                break
+    # # Check if current word id found in history
+    # else:
+    #     found_in_history = False
+    #     for hr in history_rows:
+    #         if hr["dict_id"] == dict_id:
+    #             found_in_history = True
+    #             break
 
-        if not found_in_history:
-            session.get("history").insert(0, {"dict_id": dict_id})
+    #     if not found_in_history:
+    #         session.get("history").insert(0, {"dict_id": dict_id})
 
     return redirect(url_for("index"))
 
