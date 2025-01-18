@@ -23,10 +23,10 @@ load_dotenv()
 app = Flask(__name__)
 
 # Configure session to use filesystem (instead of signed cookies)
-app.config["SESSION_PERMANENT"] = False
-app.config["SESSION_TYPE"] = "filesystem"
+# app.config["SESSION_PERMANENT"] = False
+# app.config["SESSION_TYPE"] = "filesystem"
 
-Session(app)
+# Session(app)
 
 app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL") 
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
@@ -73,34 +73,34 @@ db.init_app(app)
 def index():
     """Home page"""
 
-    # Check if history session exists
-    if not session.get("history"):
-        h_rows = session["history"] = []
+    # # Check if history session exists
+    # if not session.get("history"):
+    #     h_rows = session["history"] = []
 
-    else:
-        history_rows = session.get("history")
-        h_rows = []
-        for hr in history_rows:
-            row = Dictionary.query.get(hr['dict_id'])    #db.engine.execute("SELECT * FROM dictionary1 WHERE id = ?;", hr["dict_id"])
-            # Append serialized data into 'history' session 
-            h_rows.append(row.serialize()) 
+    # else:
+    #     history_rows = session.get("history")
+    #     h_rows = []
+    #     for hr in history_rows:
+    #         row = Dictionary.query.get(hr['dict_id'])    #db.engine.execute("SELECT * FROM dictionary1 WHERE id = ?;", hr["dict_id"])
+    #         # Append serialized data into 'history' session 
+    #         h_rows.append(row.serialize()) 
 
-    # Bookmark into the session
-    if not session.get("bookmark"):
-        bk_rows = session["bookmark"] = []
-    else:
-        bk_rows = []
-        bookmark_rows = session.get("bookmark")
-        for bm in bookmark_rows:
-            bk_rows.append(int(bm["dict_id"]))
+    # # Bookmark into the session
+    # if not session.get("bookmark"):
+    #     bk_rows = session["bookmark"] = []
+    # else:
+    #     bk_rows = []
+    #     bookmark_rows = session.get("bookmark")
+    #     for bm in bookmark_rows:
+    #         bk_rows.append(int(bm["dict_id"]))
 
     return render_template(
-        "index.html",
-        history_rows=h_rows,
-        bookmark_rows=bk_rows,
+        "index1.html",
+        history_rows=[r.serialize() for r in Dictionary.query.limit(4)],# hr_rows,
+        # bookmark_rows=bk_rows,
     )
 
-
+'''
 @app.route("/search")
 def search():
     """View search results"""
@@ -281,6 +281,6 @@ def clear_all_histroy():
     # Clear all history stored in the session
     session.get("history").clear()
     return redirect("/")
-
+'''
 if __name__ == "__main__":
     app.run()
