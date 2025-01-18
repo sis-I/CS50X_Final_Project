@@ -151,10 +151,10 @@ def recent_search():
     """Recent word searched will be registered in history session"""
     dict_id = request.args.get("id")
 
-    # history_rows = session.get("history")
-    # if not history_rows:
-    #     print('not history')
-    #     session.get("history").insert(0, {"dict_id": dict_id})
+    history_rows = session.get("history")
+    
+    if not history_rows:
+        session.get("history").insert(0, {"dict_id": dict_id})
 
     # # Check if current word id found in history
     # else:
