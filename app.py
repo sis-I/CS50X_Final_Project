@@ -23,12 +23,12 @@ load_dotenv()
 app = Flask(__name__)
 
 # Configure session to use filesystem (instead of signed cookies)
-# app.config["SESSION_PERMANENT"] = False
-# app.config["SESSION_TYPE"] = "filesystem"
+app.config["SESSION_PERMANENT"] = False
+app.config["SESSION_TYPE"] = "filesystem"
 
-# Session(app)
+Session(app)
 
-app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL") 
+app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://neondb_owner:joaK7L8ybSNE@ep-curly-sky-a26pjcpp.eu-central-1.aws.neon.tech/neondb?sslmode=require" #os.environ.get("DATABASE_URL") 
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 # SQLAlchemy database
@@ -73,17 +73,17 @@ class Dictionary(db.Model):
 def index():
     """Home page"""
 
-    # # Check if history session exists
-    # if not session.get("history"):
-    #     h_rows = session["history"] = []
+    # Check if history session exists
+    if not session.get("history"):
+        h_rows = session["history"] = []
 
-    # else:
-    #     history_rows = session.get("history")
-    #     h_rows = []
-    #     for hr in history_rows:
-    #         row = Dictionary.query.get(hr['dict_id'])    #db.engine.execute("SELECT * FROM dictionary1 WHERE id = ?;", hr["dict_id"])
-    #         # Append serialized data into 'history' session 
-    #         h_rows.append(row.serialize()) 
+    else:
+        history_rows = session.get("history")
+        h_rows = []
+        for hr in history_rows:
+            row = Dictionary.query.get(hr['dict_id'])    #db.engine.execute("SELECT * FROM dictionary1 WHERE id = ?;", hr["dict_id"])
+            # Append serialized data into 'history' session 
+            h_rows.append(row.serialize()) 
 
     # # Bookmark into the session
     # if not session.get("bookmark"):
@@ -96,7 +96,7 @@ def index():
 
     return render_template(
         "index1.html",
-        history_rows=[r.serialize() for r in Dictionary.query.limit(4)], # hr_rows,
+        history_rows=h_rows,
         # bookmark_rows=bk_rows,
     )
 
