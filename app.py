@@ -14,7 +14,7 @@ from flask import (
     make_response,
 )
 
-# from flask_session import Session
+from flask_session import Session
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -153,7 +153,7 @@ def recent_search():
     """Recent word searched will be registered in history session"""
     dict_id = request.args.get("id")
 
-    history_rows = session["history"]
+    history_rows = session.get("history")
     print(history_rows)
     if not history_rows:
         session.get("history").insert(0, {"dict_id": dict_id})
