@@ -32,7 +32,7 @@ app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://neondb_owner:joaK7L8ybSNE@
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 # SQLAlchemy database
-db = SQLAlchemy(app)
+db = SQLAlchemy()
 
 # Migrate
 migrate = Migrate(app, db)
@@ -67,7 +67,7 @@ class Dictionary(db.Model):
 
 
 # Initialize the database
-# db.init_app(app)
+db.init_app(app)
 
 @app.route("/")
 def index():
@@ -85,22 +85,22 @@ def index():
             # Append serialized data into 'history' session 
             h_rows.append(row.serialize()) 
 
-    # # Bookmark into the session
-    # if not session.get("bookmark"):
-    #     bk_rows = session["bookmark"] = []
-    # else:
-    #     bk_rows = []
-    #     bookmark_rows = session.get("bookmark")
-    #     for bm in bookmark_rows:
-    #         bk_rows.append(int(bm["dict_id"]))
+    # Bookmark into the session
+    if not session.get("bookmark"):
+        bk_rows = session["bookmark"] = []
+    else:
+        bk_rows = []
+        bookmark_rows = session.get("bookmark")
+        for bm in bookmark_rows:
+            bk_rows.append(int(bm["dict_id"]))
 
     return render_template(
-        "index1.html",
+        "index.html",
         history_rows=h_rows,
-        # bookmark_rows=bk_rows,
+        bookmark_rows=bk_rows,
     )
 
-'''
+
 @app.route("/search")
 def search():
     """View search results"""
@@ -281,6 +281,7 @@ def clear_all_histroy():
     # Clear all history stored in the session
     session.get("history").clear()
     return redirect("/")
-'''
+
+
 if __name__ == "__main__":
     app.run()
