@@ -28,7 +28,7 @@ app.config["SESSION_TYPE"] = "filesystem"
 
 Session(app)
 
-app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("POSTGRES_URL") 
+app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL", "postgresql://neondb_owner:joaK7L8ybSNE@ep-curly-sky-a26pjcpp.eu-central-1.aws.neon.tech/neondb?sslmode=require") 
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 # SQLAlchemy database
