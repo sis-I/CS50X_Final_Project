@@ -25,8 +25,8 @@ def index():
     else:
         history_session = session.get("history")
 
-        for dict_id in history_session:
-            row = Dictionary.query.get(dict_id)    #db.engine.execute("SELECT * FROM dictionary1 WHERE id = ?;", hr["dict_id"])
+        for hs in history_session:
+            row = Dictionary.query.get(hs['dict_id'])    #db.engine.execute("SELECT * FROM dictionary1 WHERE id = ?;", hr["dict_id"])
             # Append serialized data into 'history' session 
             history_rows.append(row.serialize()) 
 
@@ -99,8 +99,8 @@ def recent_search():
     history_rows = session.get("history")
 
     if not history_rows:
-        session.get("history").insert(0,  dict_id)
-        # session.get("history").insert(0, {"dict_id": dict_id})
+        # session.get("history").insert(0,  dict_id)
+        session.get("history").insert(0, {"dict_id": dict_id})
 
     # Check if current word id found in history
     else:

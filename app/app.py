@@ -38,7 +38,7 @@ os.makedirs(app.config["SESSION_FILE_DIR"], exist_ok=True)
 # Initialize session
 Session(app)
 
-app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv('DATABASE_URL')# or os.getenv('DATABASE_URL') # last for local development
+app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv('DATABASE_URL_UNPOOLED') or os.getenv('DATABASE_URL') # last for local development
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 # SQLAlchemy database
