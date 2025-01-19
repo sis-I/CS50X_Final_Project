@@ -123,7 +123,7 @@ def search():
     return render_template("no-result.html", rows=rows)
 
 
-@app.route("/dictionary/<str:word>")
+@app.route("/dictionary/<word>")
 def single_word(word):
     """View single word with its defination"""
 
