@@ -1,7 +1,4 @@
-import os
-
-from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
+from cs50 import SQL
 
 from flask import (
     Flask,
@@ -15,14 +12,9 @@ from flask import (
 )
 
 from flask_session import Session
-from dotenv import load_dotenv
-
-load_dotenv()
 
 # Configure application
 app = Flask(__name__)
-
-app.secret_key = 'ሶመስድጅፍስክፍጅ_ስው8እ'
 
 # Configure session to use filesystem (instead of signed cookies)
 app.config["SESSION_PERMANENT"] = False
@@ -30,46 +22,9 @@ app.config["SESSION_TYPE"] = "filesystem"
 
 Session(app)
 
-app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://neondb_owner:joaK7L8ybSNE@ep-curly-sky-a26pjcpp.eu-central-1.aws.neon.tech/neondb?sslmode=require"
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+# Configure CS50 Library to use sqlite database
+db = SQL("sqlite:///dictionary.db")
 
-# SQLAlchemy database
-db = SQLAlchemy()
-
-# Migrate
-migrate = Migrate(app, db)
-
-class Dictionary(db.Model):
-    __tablename__ = 'dictionary'
-
-    id = db.Column(db.Integer, primary_key=True)
-    amharic = db.Column(db.String(200))
-    english = db.Column(db.TEXT)
-    wordtype = db.Column(db.String(10))
-    reference = db.Column(db.String(20))
-
-    def __init__(self, amharic, english, wordtype=None, reference=None):
-        self.amharic = amharic
-        self.english = english
-        self.wordtype = wordtype
-        self.reference = reference
-
-    def serialize(self):
-        return {
-            'id': self.id,
-            'amharic': self.amharic,
-            'english': self.english,
-            'wordtype': self.wordtype,
-            'reference': self.reference
-        }
-
-
-    def __repr__(self):
-        return f"<Dictionary {self.amharic}>"
-
-
-# Initialize the database
-db.init_app(app)
 
 @app.route("/")
 def index():
@@ -83,9 +38,8 @@ def index():
         history_rows = session.get("history")
         h_rows = []
         for hr in history_rows:
-            row = Dictionary.query.get(hr['dict_id'])    #db.engine.execute("SELECT * FROM dictionary1 WHERE id = ?;", hr["dict_id"])
-            # Append serialized data into 'history' session 
-            h_rows.append(row.serialize()) 
+            row = db.execute("SELECT * FROM dictionary WHERE id = ?;", hr["dict_id"])
+            h_rows.append(row[0])
 
     # Bookmark into the session
     if not session.get("bookmark"):
@@ -109,40 +63,42 @@ def search():
     word = request.args.get("q")
 
     if word:
-        # Search for the word in the database
-        rows = Dictionary.query.where(Dictionary.amharic.like("%" + word + "%")).all()
-       
+        rows = db.execute(
+            "SELECT * FROM dictionary WHERE amharic LIKE ?;", "%" + word + "%"
+        )
         # If result found
-        if rows:
+        if len(rows) > 0:
             # View search results
             return render_template("search.html", rows=rows)
 
     # For simplicity, just get 3 random words
-    rows = Dictionary.query.order_by(db.func.random()).limit(3)
+    rows = db.execute("SELECT * FROM dictionary ORDER BY RANDOM() LIMIT 3;")
 
     return render_template("no-result.html", rows=rows)
 
 
-@app.route("/dictionary/<path:word>")
+@app.route("/dictionary/<word>")
 def single_word(word):
     """View single word with its defination"""
 
-    row = Dictionary.query.filter_by(amharic=word).first() #db.execute("SELECT * FROM dictionary WHERE amharic = ?;", word)
+    word_rows = db.execute("SELECT * FROM dictionary WHERE amharic = ?;", word)
 
-    if row:
-        dict_id = row.id 
+    if word_rows:
+        dict_id = word_rows[0].get('id')
 
-        # Check if word bookmarked
+        # Check the word is in bookmark
         was_bookmarked = False
-        bookmarks = session.get('bookmark')
 
-        for bookmark in bookmarks:
-            if int(bookmark.get('dict_id')) == dict_id:
+        bookmarks = session.get('bookmark')
+        for bmk in bookmarks:
+            if int(bmk['dict_id']) == dict_id:
                 was_bookmarked = True
                 break
-        
+
         return render_template(
-            "single-word.html", dict_word=row, bookmarked=was_bookmarked
+            "single-word.html", 
+            dict_word=word_rows[0],
+            bookmarked=was_bookmarked
         )
     else:
         return "Word not Found!!"
@@ -154,7 +110,6 @@ def recent_search():
     dict_id = request.args.get("id")
 
     history_rows = session.get("history")
-    print(history_rows)
     if not history_rows:
         session.get("history").insert(0, {"dict_id": dict_id})
 
@@ -169,18 +124,18 @@ def recent_search():
         if not found_in_history:
             session.get("history").insert(0, {"dict_id": dict_id})
 
-    return redirect(url_for('index'))
+    return redirect(url_for("index"))
 
 
 @app.route("/bookmark")
 def bookmark():
     """Bookmark page: List of words in history"""
-    bookmarks = session["bookmark"]
+    bookmark_rows = session["bookmark"]
     rows = []
-    if bookmarks:
-        for bmk in bookmarks:
-            row = Dictionary.query.get(bmk['dict_id']) # row = db.execute("SELECT * FROM dictionary WHERE id = ?;", br["dict_id"])
-            rows.append(row)
+    if bookmark_rows:
+        for br in bookmark_rows:
+            row = db.execute("SELECT * FROM dictionary WHERE id = ?;", br["dict_id"])
+            rows.append(row[0])
     return render_template("bookmark.html", bookmark=rows)
 
 
@@ -191,8 +146,8 @@ def history():
     rows = []
     if history_rows:
         for hr in history_rows:
-            row = Dictionary.query.get(hr['dict_id']) #db.execute("SELECT * FROM dictionary WHERE id = ?;", hr["dict_id"])
-            rows.append(row)
+            row = db.execute("SELECT * FROM dictionary WHERE id = ?;", hr["dict_id"])
+            rows.append(row[0])
 
     return render_template("history.html", history=rows)
 
@@ -251,7 +206,6 @@ def remove_history():
     if request.method == "POST":
         req = request.get_json()
 
-        print(req)
         histories = session.get("history")
         if histories:
             for h in histories:
@@ -285,5 +239,6 @@ def clear_all_histroy():
     return redirect("/")
 
 
+# Run the app
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=True)
