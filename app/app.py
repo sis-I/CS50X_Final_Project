@@ -30,7 +30,7 @@ app.config["SESSION_TYPE"] = "filesystem"
 
 Session(app)
 
-app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL") or "postgresql://neondb_owner:joaK7L8ybSNE@ep-curly-sky-a26pjcpp.eu-central-1.aws.neon.tech/neondb?sslmode=require"
+app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://neondb_owner:joaK7L8ybSNE@ep-curly-sky-a26pjcpp.eu-central-1.aws.neon.tech/neondb?sslmode=require"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 # SQLAlchemy database
