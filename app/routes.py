@@ -1,30 +1,15 @@
-from cs50 import SQL
+from flask import (current_app as app,
+                    render_template,
+                    request, 
+                    session, 
+                    redirect, 
+                    url_for, 
+                    make_response, 
+                    jsonify)
 
-from flask import (
-    Flask,
-    redirect,
-    render_template,
-    request,
-    session,
-    jsonify,
-    url_for,
-    make_response,
-)
+from app import db
 
-from flask_session import Session
-
-# Configure application
-app = Flask(__name__)
-
-# Configure session to use filesystem (instead of signed cookies)
-app.config["SESSION_PERMANENT"] = False
-app.config["SESSION_TYPE"] = "filesystem"
-
-Session(app)
-
-# Configure CS50 Library to use sqlite database
-db = SQL("sqlite:///dictionary.db")
-
+from app.models import Dictionary
 
 @app.route("/")
 def index():
@@ -38,8 +23,9 @@ def index():
         history_rows = session.get("history")
         h_rows = []
         for hr in history_rows:
-            row = db.execute("SELECT * FROM dictionary WHERE id = ?;", hr["dict_id"])
-            h_rows.append(row[0])
+            row = Dictionary.query.get(hr['dict_id'])    #db.engine.execute("SELECT * FROM dictionary1 WHERE id = ?;", hr["dict_id"])
+            # Append serialized data into 'history' session 
+            h_rows.append(row.serialize()) 
 
     # Bookmark into the session
     if not session.get("bookmark"):
@@ -63,42 +49,40 @@ def search():
     word = request.args.get("q")
 
     if word:
-        rows = db.execute(
-            "SELECT * FROM dictionary WHERE amharic LIKE ?;", "%" + word + "%"
-        )
+        # Search for the word in the database
+        rows = Dictionary.query.where(Dictionary.amharic.like("%" + word + "%")).all()
+       
         # If result found
-        if len(rows) > 0:
+        if rows:
             # View search results
             return render_template("search.html", rows=rows)
 
     # For simplicity, just get 3 random words
-    rows = db.execute("SELECT * FROM dictionary ORDER BY RANDOM() LIMIT 3;")
+    rows = Dictionary.query.order_by(db.func.random()).limit(3)
 
     return render_template("no-result.html", rows=rows)
 
 
-@app.route("/dictionary/<word>")
+@app.route("/dictionary/<path:word>")
 def single_word(word):
     """View single word with its defination"""
 
-    word_rows = db.execute("SELECT * FROM dictionary WHERE amharic = ?;", word)
+    row = Dictionary.query.filter_by(amharic=word).first() #db.execute("SELECT * FROM dictionary WHERE amharic = ?;", word)
 
-    if word_rows:
-        dict_id = word_rows[0].get('id')
+    if row:
+        dict_id = row.id 
 
-        # Check the word is in bookmark
+        # Check if word bookmarked
         was_bookmarked = False
-
         bookmarks = session.get('bookmark')
-        for bmk in bookmarks:
-            if int(bmk['dict_id']) == dict_id:
+
+        for bookmark in bookmarks:
+            if int(bookmark.get('dict_id')) == dict_id:
                 was_bookmarked = True
                 break
-
+        
         return render_template(
-            "single-word.html", 
-            dict_word=word_rows[0],
-            bookmarked=was_bookmarked
+            "single-word.html", dict_word=row, bookmarked=was_bookmarked
         )
     else:
         return "Word not Found!!"
@@ -110,6 +94,7 @@ def recent_search():
     dict_id = request.args.get("id")
 
     history_rows = session.get("history")
+    print(history_rows)
     if not history_rows:
         session.get("history").insert(0, {"dict_id": dict_id})
 
@@ -124,18 +109,18 @@ def recent_search():
         if not found_in_history:
             session.get("history").insert(0, {"dict_id": dict_id})
 
-    return redirect(url_for("index"))
+    return redirect(url_for('index'))
 
 
 @app.route("/bookmark")
 def bookmark():
     """Bookmark page: List of words in history"""
-    bookmark_rows = session["bookmark"]
+    bookmarks = session["bookmark"]
     rows = []
-    if bookmark_rows:
-        for br in bookmark_rows:
-            row = db.execute("SELECT * FROM dictionary WHERE id = ?;", br["dict_id"])
-            rows.append(row[0])
+    if bookmarks:
+        for bmk in bookmarks:
+            row = Dictionary.query.get(bmk['dict_id']) # row = db.execute("SELECT * FROM dictionary WHERE id = ?;", br["dict_id"])
+            rows.append(row)
     return render_template("bookmark.html", bookmark=rows)
 
 
@@ -146,8 +131,8 @@ def history():
     rows = []
     if history_rows:
         for hr in history_rows:
-            row = db.execute("SELECT * FROM dictionary WHERE id = ?;", hr["dict_id"])
-            rows.append(row[0])
+            row = Dictionary.query.get(hr['dict_id']) #db.execute("SELECT * FROM dictionary WHERE id = ?;", hr["dict_id"])
+            rows.append(row)
 
     return render_template("history.html", history=rows)
 
@@ -206,6 +191,7 @@ def remove_history():
     if request.method == "POST":
         req = request.get_json()
 
+        print(req)
         histories = session.get("history")
         if histories:
             for h in histories:
@@ -237,4 +223,3 @@ def clear_all_histroy():
     # Clear all history stored in the session
     session.get("history").clear()
     return redirect("/")
-
