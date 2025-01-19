@@ -38,7 +38,7 @@ os.makedirs(app.config["SESSION_FILE_DIR"], exist_ok=True)
 # Initialize session
 Session(app)
 
-app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv('DATABASE_URL_UNPOOLED') or "postgresql://neondb_owner:joaK7L8ybSNE@ep-curly-sky-a26pjcpp.eu-central-1.aws.neon.tech/neondb?sslmode=require"
+app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv('DATABASE_URL_UNPOOLED') or os.getenv('DATABASE_URL') # last for local development
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 # SQLAlchemy database
