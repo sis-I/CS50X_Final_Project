@@ -15,17 +15,20 @@ from app.models import Dictionary
 def index():
     """Home page"""
 
+    history_rows = []
+
     # Check if history session exists
-    if not session.get("history"):
-        h_rows = session["history"] = []
+    if "history" not in session:
+        # Create history session for dictionary id
+        session["history"] = history_rows
 
     else:
-        history_rows = session.get("history")
-        h_rows = []
-        for hr in history_rows:
-            row = Dictionary.query.get(hr['dict_id'])    #db.engine.execute("SELECT * FROM dictionary1 WHERE id = ?;", hr["dict_id"])
+        history_session = session.get("history")
+
+        for dict_id in history_session:
+            row = Dictionary.query.get(dict_id)    #db.engine.execute("SELECT * FROM dictionary1 WHERE id = ?;", hr["dict_id"])
             # Append serialized data into 'history' session 
-            h_rows.append(row.serialize()) 
+            history_rows.append(row.serialize()) 
 
     # Bookmark into the session
     if not session.get("bookmark"):
@@ -38,7 +41,7 @@ def index():
 
     return render_template(
         "index.html",
-        history_rows=h_rows,
+        history_rows=history_rows,
         bookmark_rows=bk_rows,
     )
 
@@ -94,17 +97,16 @@ def recent_search():
     dict_id = request.args.get("id")
 
     history_rows = session.get("history")
-    print(history_rows)
+
     if not history_rows:
-        session.get("history").insert(0, {"dict_id": dict_id})
+        session.get("history").insert(0,  dict_id)
+        # session.get("history").insert(0, {"dict_id": dict_id})
 
     # Check if current word id found in history
     else:
         found_in_history = False
-        for hr in history_rows:
-            if hr["dict_id"] == dict_id:
-                found_in_history = True
-                break
+        if dict_id in history_rows:
+            found_in_history = True
 
         if not found_in_history:
             session.get("history").insert(0, {"dict_id": dict_id})
