@@ -22,7 +22,7 @@ load_dotenv()
 # Configure application
 app = Flask(__name__)
 
-app.secret_key = 'sdfdsfwe'
+app.secret_key = 'ሶመስድጅፍስክፍጅ_ስው8እ'
 
 # Configure session to use filesystem (instead of signed cookies)
 app.config["SESSION_PERMANENT"] = False
@@ -158,16 +158,16 @@ def recent_search():
     if not history_rows:
         session.get("history").insert(0, {"dict_id": dict_id})
 
-    # # Check if current word id found in history
-    # else:
-    #     found_in_history = False
-    #     for hr in history_rows:
-    #         if hr["dict_id"] == dict_id:
-    #             found_in_history = True
-    #             break
+    # Check if current word id found in history
+    else:
+        found_in_history = False
+        for hr in history_rows:
+            if hr["dict_id"] == dict_id:
+                found_in_history = True
+                break
 
-    #     if not found_in_history:
-    #         session.get("history").insert(0, {"dict_id": dict_id})
+        if not found_in_history:
+            session.get("history").insert(0, {"dict_id": dict_id})
 
     return redirect(url_for('index'))
 
