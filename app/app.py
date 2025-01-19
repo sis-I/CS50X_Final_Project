@@ -28,6 +28,14 @@ app.secret_key = 'ሶመስድጅፍስክፍጅ_ስው8እ'
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 
+# Configuration for session to deploy on Vercel
+app.config["SESSION_FILE_DIR"] = os.path.join(os.getcwd(), "flask_session") #"/tmp"
+app.config["SESSION_FILE_THRESHOLD"] = 100 
+
+# Create session directory
+os.makedirs(app.config["SESSION_FILE_DIR"], exist_ok=True)
+
+# Initialize session
 Session(app)
 
 app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://neondb_owner:joaK7L8ybSNE@ep-curly-sky-a26pjcpp.eu-central-1.aws.neon.tech/neondb?sslmode=require"
@@ -123,7 +131,7 @@ def search():
     return render_template("no-result.html", rows=rows)
 
 
-@app.route("/dictionary/<word>")
+@app.route("/dictionary/<path:word>")
 def single_word(word):
     """View single word with its defination"""
 
