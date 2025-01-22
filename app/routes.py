@@ -91,22 +91,26 @@ def single_word(word):
         return "Word not Found!!"
 
 
-@app.route("/recent-search")
+@app.route("/recent-search", methods=["GET"])
 def recent_search():
     """Recent word searched will be registered in history session"""
     dict_id = request.args.get("id")
 
-    history_rows = session.get("history")
+    if 'history' not in session:
+        session["history"] = [{"dict_id": dict_id}]
 
-    if not history_rows:
-        # session.get("history").insert(0,  dict_id)
-        session.get("history").insert(0, {"dict_id": dict_id})
+    # if not history_rows:
+    #     # session.get("history").insert(0,  dict_id)
+    #     session.get("history").insert(0, {"dict_id": dict_id})
 
     # Check if current word id found in history
     else:
+        history_rows = session.get("history")
         found_in_history = False
-        if dict_id in history_rows:
-            found_in_history = True
+        for hr in history_rows:
+            if hr["dict_id"] == dict_id:
+                found_in_history = True
+                break
 
         if not found_in_history:
             session.get("history").insert(0, {"dict_id": dict_id})
