@@ -13,9 +13,7 @@ class Config:
 
     # Session configuration
     SESSION_TYPE = 'redis' #'filesystem' redis for session management
-    SESSION_PERMANENT = False
     SESSION_REDIS = redis.from_url(os.getenv('REDIS_URL')) or redis.Redis(host='localhost', port=6379)
+    SESSION_PERMANENT = False
 
-    # Configuration for session to deploy on Vercel
-    # SESSION_FILE_DIR = os.path.join(os.getcwd(), 'flask_session')
-    # SESSION_FILE_THRESHOLD = 100
+   

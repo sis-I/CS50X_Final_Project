@@ -15,6 +15,14 @@
         {
             "src": "/recent-search",
             "dest": "run.py"
+        },
+        {
+            "src": "/dictionary/(.*)",
+            "dest": "run.py"
+        },
+        {
+            "src": "/search/(.*)",
+            "dest": "run.py"
         }
     ]
 }

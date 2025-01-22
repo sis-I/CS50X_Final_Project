@@ -66,13 +66,13 @@ def search():
     return render_template("no-result.html", rows=rows)
 
 
-@app.route("/dictionary/<path:word>")
+@app.route("/dictionary/<word>")
 def single_word(word):
     """View single word with its defination"""
 
     row = Dictionary.query.filter_by(amharic=word).first() #db.execute("SELECT * FROM dictionary WHERE amharic = ?;", word)
 
-    if row:
+    if row is not None:
         dict_id = row.id 
 
         # Check if word bookmarked
@@ -98,10 +98,6 @@ def recent_search():
 
     if 'history' not in session:
         session["history"] = [{"dict_id": dict_id}]
-
-    # if not history_rows:
-    #     # session.get("history").insert(0,  dict_id)
-    #     session.get("history").insert(0, {"dict_id": dict_id})
 
     # Check if current word id found in history
     else:

@@ -2,6 +2,7 @@ import os
 
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+from flask_cors import CORS
 
 from flask import (
     Flask,
@@ -15,6 +16,8 @@ from flask import (
 )
 
 from flask_session import Session
+import redis
+
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -22,18 +25,15 @@ load_dotenv()
 # Configure application
 app = Flask(__name__)
 
-app.secret_key = 'ሶመስድጅፍስክፍጅ_ስው8እ'
+cors = CORS(app, resources={r"/*": {"origins": "*"}})
 
-# Configure session to use filesystem (instead of signed cookies)
-app.config["SESSION_PERMANENT"] = False
-app.config["SESSION_TYPE"] = "filesystem"
+app.secret_key = os.getenv("SECRET_KEY") or 'dksdjf)9dewjj*edf'
 
-# Configuration for session to deploy on Vercel
-app.config["SESSION_FILE_DIR"] = os.path.join(os.getcwd(), "flask_session") #"/tmp"
-app.config["SESSION_FILE_THRESHOLD"] = 100 
+app.config['SESSION_TYPE'] =  'redis' #'filesystem'
+app.config['SESSION_REDIS'] = redis.from_url(os.getenv('REDIS_URL')) or redis.Redis(host='localhost', port=6379, db=0)
+app.config['SESSION_PERMANENT'] = False
 
-# Create session directory
-os.makedirs(app.config["SESSION_FILE_DIR"], exist_ok=True)
+print(app.config['SESSION_REDIS'])
 
 # Initialize session
 Session(app)
