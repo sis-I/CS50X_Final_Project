@@ -1,13 +1,14 @@
 from app import db
 
+
 class Dictionary(db.Model):
     __tablename__ = 'dictionary'
 
     id = db.Column(db.Integer, primary_key=True)
     amharic = db.Column(db.String(200))
     english = db.Column(db.TEXT)
-    wordtype = db.Column(db.String(10))
-    reference = db.Column(db.String(20))
+    wordtype = db.Column(db.String(20))
+    reference = db.Column(db.String(200))
 
     def __init__(self, amharic, english, wordtype=None, reference=None):
         self.amharic = amharic

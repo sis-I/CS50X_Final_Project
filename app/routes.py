@@ -50,13 +50,14 @@ def index():
 def search():
     """View search results"""
     word = request.args.get("q")
-
+    print(word)
     if word:
         # Search for the word in the database
         rows = Dictionary.query.where(Dictionary.amharic.like("%" + word + "%")).all()
-       
+        print(rows)
+
         # If result found
-        if rows:
+        if rows is not None:
             # View search results
             return render_template("search.html", rows=rows)
 
