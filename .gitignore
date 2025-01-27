@@ -21,6 +21,6 @@ dict.csv
 # Flask instance
 instance/
 
-# Test requirements
-requirements1.txt
+# Vercel 
 .vercel
+

@@ -1,387 +1,483 @@
-{% extends 'layout.html' %}
-
-{% block title %}Home{% endblock %}
-
-
-{% block db_search %}
-  <button type="button" class="bg-transparent nav--search-icon" data-bs-toggle="modal" data-bs-target="#search-container" aria-expanded="false">
-    <svg width="20" height="20" class="search-Icon" viewBox="0 0 20 20">
-      <path d="M14.386 14.386l4.0877 4.0877-4.0877-4.0877c-2.9418 2.9419-7.7115 2.9419-10.6533 0-2.9419-2.9418-2.9419-7.7115 0-10.6533 2.9418-2.9419 7.7115-2.9419 10.6533 0 2.9419 2.9418 2.9419 7.7115 0 10.6533z" stroke="currentColor" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round"></path>
-    </svg>
-  </button>
-{% endblock %}
-
-{% block main %}
-  <div class="modal fade" id="search-container" aria-hidden="true" tabindex="-1">
-    <div class="modal-dialog modal-fullscreen-md-down">
-      <div class="modal-content">
-        <div class="modal-header">
-          <form class="search-form d-flex">
-            <label class="search-magnifier" for="search-input" id="search-label">
-              <svg width="20" height="20" class="search-icon" viewBox="0 0 20 20">
-                <path d="M14.386 14.386l4.0877 4.0877-4.0877-4.0877c-2.9418 2.9419-7.7115 2.9419-10.6533 0-2.9419-2.9418-2.9419-7.7115 0-10.6533 2.9418-2.9419 7.7115-2.9419 10.6533 0 2.9419 2.9418 2.9419 7.7115 0 10.6533z" stroke="currentColor" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round"></path>
-              </svg>
-            </label>
-            <input class="search-input" name="search" aria-autocomplete="both" aria-labelledby="search-label" id="search-input" autocomplete="off" autocorrect="off" autofocus="true" enterykeyhint="search" placeholder="Search words" type="search" aria-activedescendant="search-item-1" aria-controls="search-list">
-          </form>
-          <button type="button" class="btn-close search-cancel ms-2 text-bg-light" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
+{% extends 'layout.html' %} {% block title %}Home{% endblock %} {% block
+db_search %}
+<button
+  type="button"
+  class="bg-transparent nav--search-icon"
+  data-bs-toggle="modal"
+  data-bs-target="#search-container"
+  aria-expanded="false"
+>
+  <svg width="20" height="20" class="search-Icon" viewBox="0 0 20 20">
+    <path
+      d="M14.386 14.386l4.0877 4.0877-4.0877-4.0877c-2.9418 2.9419-7.7115 2.9419-10.6533 0-2.9419-2.9418-2.9419-7.7115 0-10.6533 2.9418-2.9419 7.7115-2.9419 10.6533 0 2.9419 2.9418 2.9419 7.7115 0 10.6533z"
+      stroke="currentColor"
+      fill="none"
+      fill-rule="evenodd"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    ></path>
+  </svg>
+</button>
+{% endblock %} {% block main %}
+<div class="modal fade" id="search-container" aria-hidden="true" tabindex="-1">
+  <div class="modal-dialog modal-fullscreen-md-down">
+    <div class="modal-content">
+      <div class="modal-header">
+        <form class="search-form d-flex">
+          <label class="search-magnifier" for="search-input" id="search-label">
+            <svg width="20" height="20" class="search-icon" viewBox="0 0 20 20">
+              <path
+                d="M14.386 14.386l4.0877 4.0877-4.0877-4.0877c-2.9418 2.9419-7.7115 2.9419-10.6533 0-2.9419-2.9418-2.9419-7.7115 0-10.6533 2.9418-2.9419 7.7115-2.9419 10.6533 0 2.9419 2.9418 2.9419 7.7115 0 10.6533z"
+                stroke="currentColor"
+                fill="none"
+                fill-rule="evenodd"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              ></path>
+            </svg>
+          </label>
+          <input
+            class="search-input"
+            name="search"
+            aria-autocomplete="both"
+            aria-labelledby="search-label"
+            id="search-input"
+            autocomplete="off"
+            autocorrect="off"
+            autofocus="true"
+            enterykeyhint="search"
+            placeholder="Search words"
+            type="search"
+            aria-activedescendant="search-item-1"
+            aria-controls="search-list"
+          />
+        </form>
+        <button
+          type="button"
+          class="btn-close search-cancel ms-2 text-bg-light"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
         <!-- If Recent search has found before any keyup -->
-          {% if history_rows %}
-            <section class="search-hits" id="recent-searches">
-              <div class="search-hit-source">Recent</div>
-              <ul role="listbox" aria-labelledby="search-label" id="search-list">
-                {% for row in history_rows %}
-                  <li class="search-hit mb-1" id="search-item-{{ row.id }}" role="option" aria-selected="true">
-                    <a href="/dictionary/{{ row.amharic }}">
-                      <div class="search-hit-container rounded">
-                        <div class="search-hit-content-wrapper p-2 flex-fill">
-                          <span class="search-hit-title">{{ row.amharic }}</span>
-                        </div>
+        {% if history_rows %}
+        <section class="search-hits" id="recent-searches">
+          <div class="search-hit-source">Recent</div>
+          <ul role="listbox" aria-labelledby="search-label" id="search-list">
+            {% for row in history_rows %}
+            <li
+              class="search-hit mb-1"
+              id="search-item-{{ row.id }}"
+              role="option"
+              aria-selected="true"
+            >
+              <a href="/dictionary/{{ row.id }}">
+                <div class="search-hit-container rounded">
+                  <div class="search-hit-content-wrapper p-2 flex-fill">
+                    <span class="search-hit-title">{{ row.amharic }}</span>
+                  </div>
 
-                        <form class="search-hit-action bookmark-form bookmark-button" method="post">
-                          <input type="hidden" name="id" value="{{ row.id }}">
-                          <button class="btn search-hit-action-button " title="Bookmark or Un-bookmark" type="submit">
-                            <svg width="20" height="20" viewBox="0 0 20 20" class="btn-star">
-                              <path d="M10 14.2L5 17l1-5.6-4-4 5.5-.7 2.5-5 2.5 5 5.6.8-4 4 .9 5.5z" stroke="currentColor" {% if row.id in bookmark_rows %}fill="currentColor" {% else %} fill="none" {% endif %} fill-rule="evenodd" stroke-linejoin="round"></path>
-                            </svg>
-                          </button>
-                        </form>
-                        <form action="/delete-history" class="search-hit-action delete-form" method="post">
-                          <input type="hidden" name="id" value="{{ row.id }}">
-                          <button class="btn search-hit-action-button" title="Remove this search from history" type="submit">
-                            <svg width="20" height="20" viewBox="0 0 20 20">
-                              <path d="M10 10l5.09-5.09L10 10l5.09 5.09L10 10zm0 0L4.91 4.91 10 10l-5.09 5.09L10 10z" stroke="currentColor" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round"></path>
-                            </svg>
-                          </button>
-                        </form>
-                      </div>
-                    </a>
-                  </li>
-                {% endfor %}
-              </ul>
-            </section>
-          {% else %}
+                  <form
+                    class="search-hit-action bookmark-form bookmark-button"
+                    method="post"
+                  >
+                    <input type="hidden" name="id" value="{{ row.id }}" />
+                    <button
+                      class="btn search-hit-action-button"
+                      title="Bookmark or Un-bookmark"
+                      type="submit"
+                    >
+                      <svg
+                        width="20"
+                        height="20"
+                        viewBox="0 0 20 20"
+                        class="btn-star"
+                      >
+                        <path
+                          d="M10 14.2L5 17l1-5.6-4-4 5.5-.7 2.5-5 2.5 5 5.6.8-4 4 .9 5.5z"
+                          stroke="currentColor"
+                          {%
+                          if
+                          row.id
+                          in
+                          bookmark_rows
+                          %}fill="currentColor"
+                          {%
+                          else
+                          %}
+                          fill="none"
+                          {%
+                          endif
+                          %}
+                          fill-rule="evenodd"
+                          stroke-linejoin="round"
+                        ></path>
+                      </svg>
+                    </button>
+                  </form>
+                  <form
+                    action="/delete-history"
+                    class="search-hit-action delete-form"
+                    method="post"
+                  >
+                    <input type="hidden" name="id" value="{{ row.id }}" />
+                    <button
+                      class="btn search-hit-action-button"
+                      title="Remove this search from history"
+                      type="submit"
+                    >
+                      <svg width="20" height="20" viewBox="0 0 20 20">
+                        <path
+                          d="M10 10l5.09-5.09L10 10l5.09 5.09L10 10zm0 0L4.91 4.91 10 10l-5.09 5.09L10 10z"
+                          stroke="currentColor"
+                          fill="none"
+                          fill-rule="evenodd"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        ></path>
+                      </svg>
+                    </button>
+                  </form>
+                </div>
+              </a>
+            </li>
+            {% endfor %}
+          </ul>
+        </section>
+        {% else %}
         <!-- If no Recent Search found -->
-          <div class="search-start-screen" id="no-recent-searches">
-            <p class="search-help">No recent searches</p>
-          </div>
-          {% endif %}
-        <!-- If list of search results found on keyup or input pasted -->
-          <section class="search-result--section" id="search-result-section">
-            <!-- Search results will display here OR If No Search Result -->
-          </section>
+        <div class="search-start-screen" id="no-recent-searches">
+          <p class="search-help">No recent searches</p>
         </div>
+        {% endif %}
+        <!-- If list of search results found on keyup or input pasted -->
+        <section class="search-result--section" id="search-result-section">
+          <!-- Search results will display here OR If No Search Result -->
+        </section>
       </div>
     </div>
   </div>
-  {% if history_rows %}
-    <div class="wordview-card rounded w-100 bg-secondary d-flex flex-column" style="max-width: 768px !important;">
-      <ul>
-        {% for row in history_rows %}
-          <li class="px-2">
-            <header class="d-flex w-100 px-2 mt-2">
-              <a href="/dictionary/{{row.amharic}}" class="col-3 text-center p-1 amharic-word bg-light rounded rounded-bottom-0" width="45px">
-                <span class="h5">{{row.amharic}}</span>
-              </a>
-              <!--Bookmark or un-bookmark word-->
-              <form action="/add-or-delete-bookmark/" class="ms-auto bookmark-word" method="post">
-                <input type="hidden" value={{row.id}}>
-                <button class="btn btn-secondary word-bookmark-hit-action"  title="Bookmark or Un-bookmark" type="submit">
-                  {% if row.id in bookmark_rows %}
-                    <i class="bi bi-bookmark-fill"></i>
-                  {% else %}
-                    <i class="bi bi-bookmark"></i>
-                  {% endif %}
-                </button>
-              </form>
-            </header>
-            <main>
-              <div class="col-12 english-word p-3 bg-light" height="300px">
-                <p class="mb-0">{{ row.wordtype }}</p>
-                <hr class="mt-0">
-                {% for english in row.english.split(';') %}
-                  <p><em>{{loop.index}}.</em> {{ english.strip() }}</p>
-                {% endfor %}
-              </div>
-            </main>
-          </li>
-        {% endfor %}
-      </ul>
-      <footer class="col-12 p-2 text-white text-opacity-75">
-        <small>© <i>This dictionary is copy righted</i></small>
-      </footer>
-    </div>
-  {% else %}
-    <span class="h4">Search for a word</span>
-  {% endif %}
+</div>
+{% if history_rows %}
+<div
+  class="wordview-card rounded w-100 bg-secondary d-flex flex-column"
+  style="max-width: 768px !important"
+>
+  <ul>
+    {% for row in history_rows %}
+    <li class="px-2">
+      <header class="d-flex w-100 px-2 mt-2">
+        <a
+          href="/dictionary/{{row.id}}"
+          class="col-3 text-center p-1 amharic-word bg-light rounded rounded-bottom-0"
+          width="45px"
+        >
+          <span class="h5">{{row.amharic}}</span>
+        </a>
+        <!--Bookmark or un-bookmark word-->
+        <form
+          action="/add-or-delete-bookmark/"
+          class="ms-auto bookmark-word"
+          method="post"
+        >
+          <input type="hidden" value="{{row.id}}" />
+          <button
+            class="btn btn-secondary word-bookmark-hit-action"
+            title="Bookmark or Un-bookmark"
+            type="submit"
+          >
+            {% if row.id in bookmark_rows %}
+            <i class="bi bi-bookmark-fill"></i>
+            {% else %}
+            <i class="bi bi-bookmark"></i>
+            {% endif %}
+          </button>
+        </form>
+      </header>
+      <main>
+        <div class="col-12 english-word p-3 bg-light" height="300px">
+          {% if row.wordtype %}
+          <p class="mb-0">{{ row.wordtype }}</p>
+          {% endif %}
+          <hr class="mt-0" />
+          {% for english in row.english.split(';') %}
+          <p><em>{{loop.index}}.</em> {{ english.strip() }}</p>
+          {% endfor %}
+        </div>
+      </main>
+    </li>
+    {% endfor %}
+  </ul>
+  <footer class="col-12 p-2 text-white text-opacity-75">
+    <small>© <i>This dictionary is copy righted</i></small>
+  </footer>
+</div>
+{% else %}
+<span class="h4">Search for a word</span>
+{% endif %} {% endblock %} {% block jsscript %}
+<script>
 
-{% endblock %}
+  // Get History session if exist
+  const history = {{ session.get('history')|tojson }};
 
-{% block jsscript %}
-  <script>
-    
-    // Get History session if exist
-    const history = {{ session.get('history')|tojson }};
+  const nav_search = document.querySelector(".nav--search-icon");
+  const search_sections = document.querySelectorAll(["#no-recent-searches", "#recent-searches", "#search-result-section"]);
 
-    const nav_search = document.querySelector(".nav--search-icon");
-    const search_sections = document.querySelectorAll(["#no-recent-searches", "#recent-searches", "#search-result-section"]);
+  const no_recent_searches = document.getElementById("no-recent-searches"),
+  recent_searches = document.getElementById("recent-searches"),
+  search_result_section = document.getElementById("search-result-section");
 
-    const no_recent_searches = document.getElementById("no-recent-searches"),
-    recent_searches = document.getElementById("recent-searches"),
-    search_result_section = document.getElementById("search-result-section");
+  // When Nav search icon clicked
+  nav_search.addEventListener('click', () => {
+    // View only recent if exist or no recent search otherwise
+    recent_or_no_search_result();
+  });
 
-    // When Nav search icon clicked
-    nav_search.addEventListener('click', () => {
-      // View only recent if exist or no recent search otherwise
-      recent_or_no_search_result();
-    });
+  const search_input = document.getElementById("search-input");
 
-    const search_input = document.getElementById("search-input");
+  search_input.addEventListener('keyup', async (event) => {
+    event.preventDefault();
+    const in_value = event.target.value;
 
-    search_input.addEventListener('keyup', async (event) => {
-      event.preventDefault();
-      const in_value = event.target.value;
+    // Search using AJAX
+    const response = await fetch(`/search?q=${in_value}`);
+    const data = await response.text();
 
-      // Search using AJAX
-      const response = await fetch(`/search?q=${in_value}`);
-      const data = await response.text();
+    search_result_view(data, in_value)
+  });
 
-      search_result_view(data, in_value)
-    });
+  // When word pasted to a search input
+  search_input.addEventListener('paste', async (event) => {
 
-    // When word pasted to a search input
-    search_input.addEventListener('paste', async (event) => {
+    const pastedWord = event.clipboardData.getData('text');
+    const response = await fetch(`/search?q=${pastedWord}`);
+    const data = await response.text();
 
-      const pastedWord = event.clipboardData.getData('text');
-      const response = await fetch(`/search?q=${pastedWord}`);
-      const data = await response.text();
+    search_result_view(data, pasteWord);
 
-      search_result_view(data, pasteWord);
+  });
 
-    });
+  // Recent search history view or otherwise
+  function recent_or_no_search_result() {
+    search_input.value = "";
+    search_result_section.style.display = "none";
 
-    // Recent search history view or otherwise
-    function recent_or_no_search_result() {
-      search_input.value = "";
-      search_result_section.style.display = "none";
+    if (history.length > 0) {
+      recent_searches.style.display = "block";
+      handle_recent_searches_forms(recent_searches);
+    }
+    else {
+      no_recent_searches.style.display = "block";
+    }
+  }
 
-      if (history.length > 0) {
-        recent_searches.style.display = "block";
-        handle_recent_searches_forms(recent_searches);
-      }
-      else {
-        no_recent_searches.style.display = "block";
-      }
+  // Search result view when search found or no result
+  function search_result_view(data, input) {
+    for (let s of search_sections) {
+      s.style.display = 'none';
     }
 
-    // Search result view when search found or no result
-    function search_result_view(data, input) {
-      for (let s of search_sections) {
-        s.style.display = 'none';
-      }
-
-      if (input === '') {
-        if (history.length > 0) {
-          recent_searches.style.display = "block";
-        } else {
-          no_recent_searches.style.display = "block";
-        }
-
-        return;
-      }
-
-      search_result_section.innerHTML = data;
-      search_result_section.style.display = 'block';
-
-      const no_result = document.getElementById("no-result");
-      if (no_result !== null)  {
-        no_result.querySelector('strong').textContent = input;
-
-      } else{
-        toggleChevron();
+    if (input === '') {
+      if (history.length > 0) {
+        recent_searches.style.display = "block";
+      } else {
+        no_recent_searches.style.display = "block";
       }
 
       return;
     }
 
-    // Toggle chevron icon when clicked
-    function toggleChevron() {
-      let toggleBtns = document.querySelectorAll('.chevron');
+    search_result_section.innerHTML = data;
+    search_result_section.style.display = 'block';
 
-      toggleBtns.forEach(btn => {
-        btn.onclick = () => {
-          let icon = btn.querySelector('i');
-          if (btn.ariaExpanded === 'true') {
-            icon.classList.replace('bi-chevron-down', 'bi-chevron-up');
-          } else {
-            icon.classList.replace('bi-chevron-up', 'bi-chevron-down');
-          }
+    const no_result = document.getElementById("no-result");
+    if (no_result !== null)  {
+      no_result.querySelector('strong').textContent = input;
+
+    } else{
+      toggleChevron();
+    }
+
+    return;
+  }
+
+  // Toggle chevron icon when clicked
+  function toggleChevron() {
+    let toggleBtns = document.querySelectorAll('.chevron');
+
+    toggleBtns.forEach(btn => {
+      btn.onclick = () => {
+        let icon = btn.querySelector('i');
+        if (btn.ariaExpanded === 'true') {
+          icon.classList.replace('bi-chevron-down', 'bi-chevron-up');
+        } else {
+          icon.classList.replace('bi-chevron-up', 'bi-chevron-down');
         }
-      })
-    }
+      }
+    })
+  }
 
 
-    // Get Bookmarked Ids
-    let bookmarkIds = {{ bookmark_rows }};
+  // Get Bookmarked Ids
+  let bookmarkIds = {{ bookmark_rows }};
 
-    // Define toggle bookmark function
-    function toggleBookmark() {
-      const bookmark_forms = document.querySelectorAll(".bookmark-word");
+  // Define toggle bookmark function
+  function toggleBookmark() {
+    const bookmark_forms = document.querySelectorAll(".bookmark-word");
 
-      // Search modal dialog box
-      const bk_forms = document.querySelectorAll('.bookmark-form');
+    // Search modal dialog box
+    const bk_forms = document.querySelectorAll('.bookmark-form');
 
-      // Loop through all forms in the list
-      bookmark_forms.forEach(form => {
+    // Loop through all forms in the list
+    bookmark_forms.forEach(form => {
 
-        const input = form.querySelector('input');
-        const btn = form.querySelector("i");
+      const input = form.querySelector('input');
+      const btn = form.querySelector("i");
 
-        form.addEventListener('submit', (e) => {
-          e.preventDefault();
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
 
-          const formData = {
-            'id': input.value
-          };
+        const formData = {
+          'id': input.value
+        };
 
-          fetch(`/add-or-delete-bookmark`, {
-            method: 'POST',
-            headers: new Headers({
-              'content-type': 'application/json',
-            }),
-            body: JSON.stringify(formData)
-          })
-          .then(res => {
-            if (res.status !== 200) {
-              console.log(res.status)
-              return;
-            }
-            res.json().then(data => console.log(data))
-          })
-          .catch(error => console.log(error))
-        });
-
-        btn.onclick = () => {
-          const b_icon = 'bi-bookmark'
-          if (btn.classList.contains(b_icon)) {
-            btn.classList.replace(b_icon, `${b_icon}-fill`);
-
-            // Take effect in search modal history list
-            bk_forms.forEach(bk_form => {
-              if (input.value === bk_form.querySelector('input').value) {
-                const star = bk_form.querySelector('path');
-                let pathFill = star.attributes.fill;
-                pathFill.textContent = 'currentColor';
-                return;
-              }
-            });
-          } else {
-            btn.classList.replace(`${b_icon}-fill`, b_icon);
-
-            // Take effect in search modal history list
-            bk_forms.forEach(bk_form => {
-              if (input.value === bk_form.querySelector('input').value) {
-                const star = bk_form.querySelector('path');
-                let pathFill = star.attributes.fill;
-                pathFill.textContent = 'none';
-                return;
-              }
-            });
-          }
-        }
-      });
-    }
-
-    // Toggle Bookmark
-    const recent_words = {{ history_rows | tojson }};
-    if (recent_words.length > 0) {
-      toggleBookmark();
-    }
-
-    // View recent search results
-    function handle_recent_searches_forms(recent_search) {
-      const delete_forms = recent_search.querySelectorAll('.delete-form');
-
-      delete_forms.forEach(form => {
-
-        form.addEventListener('submit', async (e) => {
-          e.preventDefault();
-
-          const id = form.querySelector('input').value
-          const form_data = {
-            'id': id
-          }
-          const response = await fetch("/delete-history", {
-            method: 'POST',
-            headers: new Headers({
-              'content-type': 'application/json'
-            }),
-            body: JSON.stringify(form_data)
-          });
-
-          const data = await response.json();
-          if (response.status !== 200) {
-            console.log(response.status);
+        fetch(`/add-or-delete-bookmark`, {
+          method: 'POST',
+          headers: new Headers({
+            'content-type': 'application/json',
+          }),
+          body: JSON.stringify(formData)
+        })
+        .then(res => {
+          if (res.status !== 200) {
+            console.log(res.status)
             return;
           }
-          console.log(data);
-          document.querySelector(`#search-item-${id}`).remove();
-        });
+          res.json().then(data => console.log(data))
+        })
+        .catch(error => console.log(error))
       });
 
-      let bookmark_forms = recent_search.querySelectorAll([".bookmark-form"]);
+      btn.onclick = () => {
+        const b_icon = 'bi-bookmark'
+        if (btn.classList.contains(b_icon)) {
+          btn.classList.replace(b_icon, `${b_icon}-fill`);
 
-      bookmark_forms.forEach(form => {
-        const dict_id = form.querySelector('input').value;
-
-        const star = form.querySelector('path');
-        let pathFill = star.attributes.fill;
-
-        form.addEventListener('submit', async (e) => {
-          e.preventDefault();
-          const formData = {
-            'id': dict_id
-          };
-
-          const response = await fetch('/add-or-delete-bookmark', {
-            method: 'POST',
-            headers: new Headers({
-              'content-type': 'application/json'
-            }),
-            body: JSON.stringify(formData)
+          // Take effect in search modal history list
+          bk_forms.forEach(bk_form => {
+            if (input.value === bk_form.querySelector('input').value) {
+              const star = bk_form.querySelector('path');
+              let pathFill = star.attributes.fill;
+              pathFill.textContent = 'currentColor';
+              return;
+            }
           });
+        } else {
+          btn.classList.replace(`${b_icon}-fill`, b_icon);
 
-          const data = await response.json();
+          // Take effect in search modal history list
+          bk_forms.forEach(bk_form => {
+            if (input.value === bk_form.querySelector('input').value) {
+              const star = bk_form.querySelector('path');
+              let pathFill = star.attributes.fill;
+              pathFill.textContent = 'none';
+              return;
+            }
+          });
+        }
+      }
+    });
+  }
 
-          console.log(data)
+  // Toggle Bookmark
+  const recent_words = {{ history_rows | tojson }};
+  if (recent_words.length > 0) {
+    toggleBookmark();
+  }
 
-          const bmk_forms = document.querySelectorAll(".bookmark-word");
+  // View recent search results
+  function handle_recent_searches_forms(recent_search) {
+    const delete_forms = recent_search.querySelectorAll('.delete-form');
 
-          if (pathFill.textContent === 'none') {
-            pathFill.textContent = 'currentColor';
+    delete_forms.forEach(form => {
 
-            bmk_forms.forEach(b_form => {
-              const icon = b_form.querySelector('i');
-              if (dict_id === b_form.querySelector('input').value) {
-                icon.classList.replace('bi-bookmark', 'bi-bookmark-fill');
-                return;
-              }
-            });
-          } else if (pathFill.textContent === 'currentColor') {
-            pathFill.textContent = 'none';
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
 
-            bmk_forms.forEach(b_form => {
-              const icon = b_form.querySelector('i');
-              if (dict_id === b_form.querySelector('input').value) {
-                icon.classList.replace('bi-bookmark-fill', 'bi-bookmark');
-                return;
-              }
-            });
-          }
+        const id = form.querySelector('input').value
+        const form_data = {
+          'id': id
+        }
+        const response = await fetch("/delete-history", {
+          method: 'POST',
+          headers: new Headers({
+            'content-type': 'application/json'
+          }),
+          body: JSON.stringify(form_data)
         });
+
+        const data = await response.json();
+        if (response.status !== 200) {
+          console.log(response.status);
+          return;
+        }
+        console.log(data);
+        document.querySelector(`#search-item-${id}`).remove();
       });
-    }
-  </script>
+    });
+
+    let bookmark_forms = recent_search.querySelectorAll([".bookmark-form"]);
+
+    bookmark_forms.forEach(form => {
+      const dict_id = form.querySelector('input').value;
+
+      const star = form.querySelector('path');
+      let pathFill = star.attributes.fill;
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formData = {
+          'id': dict_id
+        };
+
+        const response = await fetch('/add-or-delete-bookmark', {
+          method: 'POST',
+          headers: new Headers({
+            'content-type': 'application/json'
+          }),
+          body: JSON.stringify(formData)
+        });
+
+        const data = await response.json();
+
+        console.log(data)
+
+        const bmk_forms = document.querySelectorAll(".bookmark-word");
+
+        if (pathFill.textContent === 'none') {
+          pathFill.textContent = 'currentColor';
+
+          bmk_forms.forEach(b_form => {
+            const icon = b_form.querySelector('i');
+            if (dict_id === b_form.querySelector('input').value) {
+              icon.classList.replace('bi-bookmark', 'bi-bookmark-fill');
+              return;
+            }
+          });
+        } else if (pathFill.textContent === 'currentColor') {
+          pathFill.textContent = 'none';
+
+          bmk_forms.forEach(b_form => {
+            const icon = b_form.querySelector('i');
+            if (dict_id === b_form.querySelector('input').value) {
+              icon.classList.replace('bi-bookmark-fill', 'bi-bookmark');
+              return;
+            }
+          });
+        }
+      });
+    });
+  }
+</script>
 {% endblock %}

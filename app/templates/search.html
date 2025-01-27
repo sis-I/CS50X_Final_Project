@@ -12,7 +12,9 @@
                 </button>
             </div>
         </div>
-            <p class="collapse ps-3 border-top rounded" style="height: 100%" id="item-{{r['id']}}">1. {{ r['english']  }}</p>
+        {% if r.english %}
+            <p class="collapse ps-3 border-top rounded" style="height: 100%" id="item-{{r['id']}}">1. {{ r['english'] | truncate(40) }}</p>
+        {% endif %}
     {% endfor %}
 
 </div>

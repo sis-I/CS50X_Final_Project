@@ -56,7 +56,7 @@ def search():
         rows = Dictionary.query.where(Dictionary.amharic.like("%" + word + "%")).all()
 
         # If result found
-        if len(rows) > 0:
+        if rows:
             # View search results
             return render_template("search.html", rows=rows)
 
@@ -66,11 +66,12 @@ def search():
     return render_template("no-result.html", rows=rows)
 
 
-@app.route("/dictionary/<word>")
-def single_word(word):
+@app.route("/dictionary/<int:id>")
+def single_word(id):
     """View single word with its defination"""
-
-    row = Dictionary.query.filter_by(amharic=word).first() #db.execute("SELECT * FROM dictionary WHERE amharic = ?;", word)
+    # Temp 
+    row = Dictionary.query.get(id)
+    # row = Dictionary.query.filter_by(amharic=word).first() #db.execute("SELECT * FROM dictionary WHERE amharic = ?;", word)
 
     if row is not None:
         dict_id = row.id 
