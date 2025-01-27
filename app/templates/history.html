@@ -12,7 +12,7 @@
         <ul class="listbox">
         {% for row in history %}
             <li class="search-hit mb-1">
-                <a href="/dictionary/{{ row.amharic }}">
+                <a href="/dictionary/{{ row.id }}">
                     <div class="search-hit-container rounded">
                         <div class="h5 w-100">{{ row.amharic }}</div>
                         <form action="{{ url_for('delete_history', id=row.id) }}" method="post">
