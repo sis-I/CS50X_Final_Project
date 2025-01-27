@@ -23,6 +23,8 @@ def upgrade():
                existing_type=sa.VARCHAR(length=20),
                type_=sa.String(length=200),
                existing_nullable=True)
+    # create index for amharic column
+    op.create_index(op.f('idx_dictionary_amharic'), 'dictionary', ['amharic'], unique=True)
     # ### end Alembic commands ###
 
 
@@ -40,4 +42,5 @@ def downgrade():
     sa.Column('reference', sa.TEXT(), autoincrement=False, nullable=True),
     sa.PrimaryKeyConstraint('id', name='dictionary1_pkey1')
     )
+    op.drop_index(op.f('idx_dictionary_amharic'), table_name='dictionary')
     # ### end Alembic commands ###

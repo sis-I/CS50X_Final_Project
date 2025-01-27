@@ -11,6 +11,7 @@ from app import db
 
 from app.models import Dictionary
 
+
 @app.route("/")
 def index():
     """Home page"""
@@ -66,30 +67,29 @@ def search():
     return render_template("no-result.html", rows=rows)
 
 
-@app.route("/dictionary/<int:id>")
-def single_word(id):
+@app.route("/dictionary/<int:dict_id>")
+def single_word(dict_id):
     """View single word with its defination"""
-    # Temp 
-    row = Dictionary.query.get(id)
     # row = Dictionary.query.filter_by(amharic=word).first() #db.execute("SELECT * FROM dictionary WHERE amharic = ?;", word)
 
+    row = Dictionary.query.get(dict_id)     
+
     if row is not None:
-        dict_id = row.id 
+        # Assume word is not bookmarked
+        was_bookmarked = False
 
         # Check if word bookmarked
-        was_bookmarked = False
         bookmarks = session.get('bookmark')
-
         for bookmark in bookmarks:
             if int(bookmark.get('dict_id')) == dict_id:
                 was_bookmarked = True
                 break
-        
+
         return render_template(
             "single-word.html", dict_word=row, bookmarked=was_bookmarked
         )
     else:
-        return "Word not Found!!"
+        return "WORD NOT FOUND!!", 300
 
 
 @app.route("/recent-search", methods=["GET"])
@@ -118,7 +118,7 @@ def recent_search():
 @app.route("/bookmark")
 def bookmark():
     """Bookmark page: List of words in history"""
-    bookmarks = session["bookmark"]
+    bookmarks = session.get("bookmark")
     rows = []
     if bookmarks:
         for bmk in bookmarks:
@@ -130,7 +130,7 @@ def bookmark():
 @app.route("/history")
 def history():
     """History page: List of words in history"""
-    history_rows = session["history"]
+    history_rows = session.get("history")
     rows = []
     if history_rows:
         for hr in history_rows:
